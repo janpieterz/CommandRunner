@@ -8,17 +8,17 @@ namespace CommandRunner
     public interface ICommand
     {
         /// <summary>
-        /// Method called when command should be executed.
+        /// The command identifier.
         /// </summary>
-        /// <param name="arguments">The arguments a user provied, minus the Command itself</param>
-        void Execute(IEnumerable<string> arguments);
+        string Command { get; }
         /// <summary>
         /// A simple help to document all different sub-commands so users can easily see which parameters should be used and how.
         /// </summary>
         IEnumerable<string> Help { get; }
         /// <summary>
-        /// The command identifier.
+        /// Method called when command should be executed.
         /// </summary>
-        string Command { get; }
+        /// <param name="arguments">The arguments a user provied, minus the Command itself</param>
+        void Execute(IEnumerable<string> arguments);
     }
 }
