@@ -1,7 +1,7 @@
 ﻿{
   "version": "1.0.0-*",
   "description": "Simple CommandRunner to bootstrap console applications",
-  "authors": [ "Jan-Pieter Zoutewelle, Intreba" ],
+  "authors": [ "Intreba" ],
   "tags": [ "commandrunner", "console", "command", "runner" ],
   "projectUrl": "https://github.com/Intreba/CommandRunner",
   "licenseUrl": "https://github.com/Intreba/CommandRunner/blob/master/LICENSE",
