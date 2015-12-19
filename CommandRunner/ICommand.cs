@@ -10,8 +10,8 @@ namespace CommandRunner
         /// <summary>
         /// Method called when command should be executed.
         /// </summary>
-        /// <param name="args">The arguments a user provied, minus the Command itself</param>
-        void Execute(IEnumerable<string> args);
+        /// <param name="arguments">The arguments a user provied, minus the Command itself</param>
+        void Execute(IEnumerable<string> arguments);
         /// <summary>
         /// A simple help to document all different sub-commands so users can easily see which parameters should be used and how.
         /// </summary>
