@@ -1,0 +1,20 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Simple CommandRunner to bootstrap console applications",
+  "authors": [ "Jan-Pieter Zoutewelle, Intreba" ],
+  "tags": [ "commandrunner", "console", "command", "runner" ],
+  "projectUrl": "https://github.com/Intreba/CommandRunner",
+  "licenseUrl": "https://github.com/Intreba/CommandRunner/blob/master/LICENSE",
+  "frameworks": {
+    "net40": { },
+    "net451": { },
+    "dotnet5.4": {
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.1-beta-23516",
+        "System.Collections": "4.0.11-beta-23516",
+        "System.Linq": "4.0.1-beta-23516",
+        "System.Console": "4.0.0-beta-23516"
+      }
+    }
+  }
+}
