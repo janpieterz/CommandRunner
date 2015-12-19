@@ -39,10 +39,12 @@ namespace CommandRunner
             do
             {
                 Console.WriteLine("Available commands:");
-                List<IEnumerable<string>> helpItems = new List<IEnumerable<string>>();
-                foreach (var helpItem in _commands.SelectMany(command => command.Help))
+                foreach (var command in _commands)
                 {
-                    ConsoleMessages.Help(helpItem);
+                    foreach (var help in command.Help)
+                    {
+                        ConsoleMessages.Help($"{command.Command} {help}");
+                    }
                 }
                 Console.WriteLine("command: ");
                 input = Console.ReadLine() ?? string.Empty;
