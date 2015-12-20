@@ -12,8 +12,9 @@ static void Main(string[] args)
 
 private void Run()
 {
-    CommandRunner.CommandRunner.Run(
-        new GoogleSearchCommand()
+    Runner.Start(
+        new GoogleSearchCommand(),
+        new XyZCommand()
         );
 }
 

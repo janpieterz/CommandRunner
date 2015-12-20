@@ -24,6 +24,16 @@ namespace CommandRunner
 #endif
         }
         /// <summary>
+        /// Bootstrap your Helper
+        /// </summary>
+        /// <param name="commands">The commands you want to be made available.</param>
+        public static void Start(params ICommand[] commands)
+        {
+            var runner = new Runner();
+            runner.Run(commands);
+            Console.ReadLine();
+        }
+        /// <summary>
         /// Run the command runner
         /// </summary>
         /// <param name="commands">All commands you'd like to be made available.</param>
