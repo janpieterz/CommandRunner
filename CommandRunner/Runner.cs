@@ -1,98 +1,129 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using CommandRunner.Parse;
 
 namespace CommandRunner
 {
-    /// <summary>
-    /// Runner to execute the commands.
-    /// </summary>
     public class Runner
     {
-        private ICommand[] _commands;
-        /// <summary>
-        /// Create your command runner.
-        /// </summary>
-        /// <param name="title">Optional title for the console.</param>
-        public Runner(string title = "Command Runner")
+        public static void ScanAndStart(string title)
         {
-#if DOTNET5_4
-            //As soon as support for this lands in .net core
-            //https://github.com/dotnet/corefx/issues/4636
-#else
+            var reflectionParser = new ReflectionParser();
+            var menuItems = reflectionParser.ReflectAllAssemblies();
+            Start(title, menuItems);
+        }
+        public static void ScanAndStart(string title, Func<Type, object> activator)
+        {
+            var reflectionParser = new ReflectionParser()
+                .WithActivator(activator);
+            var menuItems = reflectionParser.ReflectAllAssemblies();
+            Start(title, menuItems);
+        }
+        public static void Start(string title, IEnumerable<IMenuItem> menuItems)
+        {
             Console.Title = title;
-#endif
-        }
-        /// <summary>
-        /// Bootstrap your Helper
-        /// </summary>
-        /// <param name="commands">The commands you want to be made available.</param>
-        public static void Start(params ICommand[] commands)
-        {
-            var runner = new Runner();
-            runner.Run(commands);
-            Console.ReadLine();
-        }
-        /// <summary>
-        /// Run the command runner
-        /// </summary>
-        /// <param name="commands">All commands you'd like to be made available.</param>
-        public void Run(params ICommand[] commands)
-        {
-            if (!commands.Any())
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length == 0 || (args.FirstOrDefault() == Assembly.GetEntryAssembly().Location))
             {
-                Console.WriteLine("Please add some commands to add functionality.");
-                return;
-            }
-            _commands = commands;
-            string input;
-            do
-            {
-                Console.WriteLine("Available commands:");
-                foreach (var command in _commands)
-                {
-                    foreach (var help in command.Help)
-                    {
-                        ConsoleMessages.Help($"{command.Command} {help}");
-                    }
-                }
-                Console.WriteLine("command: ");
-                input = Console.ReadLine() ?? string.Empty;
-                Process(input);
-            } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
-        }
-
-        private void Process(string input)
-        {
-            string[] arguments = ParseArguments(input);
-
-            if (arguments == null) return;
-
-            string command = arguments[0].ToLowerInvariant();
-
-            ICommand handler = _commands.FirstOrDefault(x => x.Command.ToLower() == command);
-            if (handler == null)
-            {
-                ConsoleMessages.Error($"Command {command} not recognized!");
+                StartTerminalMode(menuItems);
             }
             else
             {
-                var commandArgs = arguments.Skip(1);
-                handler.Execute(commandArgs);
+                RunCommand(menuItems.OfType<ICommand>(), args);
+                Console.WriteLine("Press enter to quit.");
+                Console.ReadLine();
+
             }
         }
-
-        private string[] ParseArguments(string input)
+        public static void ScanAndRunCommand(IEnumerable<string> arguments)
         {
-            if (string.IsNullOrWhiteSpace(input)) return null;
-            //Parse arguments with a double quote in it as a single item, for example: File copy "C:\Program Files\example.txt"
-            var arguments = input.Split('"')
-                .Select((element, index) => index % 2 == 0  // If even index
-                    ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
-                    : new string[] { element })  // Keep the entire item
-                .SelectMany(element => element).ToArray();
-            if (!arguments.Any()) return null;
-            return arguments;
+            var reflectionParser = new ReflectionParser();
+            var commands = reflectionParser.ReflectAllAssemblies();
+            RunCommand(commands.OfType<ICommand>(), arguments);
         }
+        public static void RunCommand(IEnumerable<ICommand> availableCommands,
+            IEnumerable<string> arguments)
+        {
+            var argumentsAsList = arguments.ToList();
+            var command = FindCommand(availableCommands, argumentsAsList);
+            command.Execute(argumentsAsList);
+        }
+        public static void StartTerminalMode(IEnumerable<IMenuItem> menuItems)
+        {
+            var menuItemList = menuItems.ToList();
+            if (!menuItemList.Any())
+            {
+                Console.WriteLine("Please add commands to add functionality.");
+                return;
+            }
+            string input;
+            do
+            {
+                Console.WriteLine($"Available commands:");
+                menuItemList = menuItemList.OrderBy(x => x.Title).ToList();
+                var groupedMenuItems = menuItemList.GroupBy(x => x.Title.Split(' ')[0]);
+                foreach (IGrouping<string, IMenuItem> groupedMenuItem in groupedMenuItems)
+                {
+                    Console.WriteLine();
+                    foreach (IMenuItem menuItem in groupedMenuItem)
+                    {
+                        if (menuItem is ContainerCommand)
+                        {
+                            Console.WriteLine($"  {menuItem.Title.ToLowerInvariant()} {menuItem.Help}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"  {menuItem.Title.ToLowerInvariant()}: {menuItem.Help}");
+                        }
+                    }
+                    Console.WriteLine();
+                }
+
+                Console.Write($"{Environment.NewLine}Command> ");
+                input = Console.ReadLine() ?? string.Empty;
+                var inputAsArguments = InputParser.ParseInputToArguments(input).ToList();
+                ICommand command = FindCommand(menuItemList.OfType<ICommand>(), inputAsArguments);
+                if (command != null)
+                {
+                    try
+                    {
+                        command.Execute(inputAsArguments);
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine(exception.ToString());
+                    }
+                    Console.WriteLine();
+                }
+            } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
+        }
+        private static ICommand FindCommand(IEnumerable<ICommand> commands, IEnumerable<string> arguments)
+        {
+            var argumentsAsList = arguments.ToList();
+            var commandsAsList = commands.ToList();
+            var firstArgument = argumentsAsList.FirstOrDefault();
+            if (firstArgument == null)
+            {
+                Console.WriteLine("Please provide a valid command. No input provided.");
+                return null;
+            }
+
+            string identifier = string.Empty;
+            foreach (var argument in argumentsAsList)
+            {
+                identifier = string.IsNullOrWhiteSpace(identifier) ? argument : $"{identifier} {argument}";
+                ICommand command = (ICommand)commandsAsList.FirstOrDefault(x => x.Title.Equals(identifier, StringComparison.OrdinalIgnoreCase));
+                if (command != null)
+                {
+                    return command;
+                }
+            }
+            
+            Console.WriteLine($"Please provide a valid command. Input was: {identifier}");
+            return null;
+        }
+
     }
 }

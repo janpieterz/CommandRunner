@@ -1,19 +1,18 @@
-﻿{
-  "version": "1.0.2",
-  "description": "Simple CommandRunner to bootstrap console applications",
-  "authors": [ "Intreba" ],
-  "tags": [ "commandrunner", "console", "command", "runner" ],
-  "projectUrl": "https://github.com/Intreba/CommandRunner",
-  "licenseUrl": "https://github.com/Intreba/CommandRunner/blob/master/LICENSE",
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.0"
+  },
+
   "frameworks": {
-    "net40": { },
-    "net451": { },
-    "dotnet5.4": {
+    "net45": {}, 
+    "netstandard1.6": {
+      "imports": "dnxcore50",
       "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-23516",
-        "System.Collections": "4.0.11-beta-23516",
-        "System.Linq": "4.0.1-beta-23516",
-        "System.Console": "4.0.0-beta-23516"
+        "System.Console": "4.0.0",
+        "System.Reflection.TypeExtensions": "4.1.0",
+        "System.Runtime.Loader": "4.0.0"
       }
     }
   }
