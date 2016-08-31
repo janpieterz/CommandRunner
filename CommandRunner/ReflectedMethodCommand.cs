@@ -19,7 +19,14 @@ namespace CommandRunner
         void ICommand.Execute(List<string> args)
         {
             var @class = Activator.CreateInstance(_methodInfo.DeclaringType);
-            _methodInfo.Invoke(@class, new object[] {args});
+            if (_methodInfo.GetParameters().Length > 0)
+            {
+                _methodInfo.Invoke(@class, new object[] {args});
+            }
+            else
+            {
+                _methodInfo.Invoke(@class, null);
+            }
         }
     }
 }

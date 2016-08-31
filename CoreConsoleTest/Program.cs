@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using CommandRunner;
-using CommandRunner.Configuration;
+using CommandRunnerCoreTest;
 
-namespace CommandRunnerCoreTest
+namespace CommandRunner.CoreConsoleTest
 {
     public class Program
     {
@@ -18,10 +16,17 @@ namespace CommandRunnerCoreTest
 
         private void Run()
         {
-            items.Add(new EchoCommand());
-            items.Add(new NestingCommand());
-            Runner.ScanAndStart("CommandRunners", Activator);
-            //Runner.Start("CommandRunnerCoreTest console", new List<ICommand>() {new EchoCommand()});
+            new Runner(options =>
+            {
+                options.Title = "Command Runner";
+                options.Scan.AllAssemblies();
+                options.Activate.WithReflectionActivator();
+                
+            }).Run();
+            //items.Add(new EchoCommand());
+            //items.Add(new NestingCommand());
+            //Runner.ScanAndStart("CommandRunners", Activator);
+            ////Runner.Start("CommandRunnerCoreTest console", new List<ICommand>() {new EchoCommand()});
         }
 
         private object Activator(Type type)

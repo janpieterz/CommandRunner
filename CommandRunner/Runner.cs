@@ -4,54 +4,108 @@ using System.Linq;
 using System.Reflection;
 
 namespace CommandRunner
-{
+{    
     public class Runner
     {
-        public static void ScanAndStart(string title)
+        private readonly RunnerSettings _settings;
+        public Runner()
         {
-            var reflectionParser = new ReflectionParser();
-            var menuItems = reflectionParser.ReflectAllAssemblies();
-            Start(title, menuItems);
-        }
-        public static void ScanAndStart(string title, Func<Type, object> activator)
-        {
-            var reflectionParser = new ReflectionParser()
-                .WithActivator(activator);
-            var menuItems = reflectionParser.ReflectAllAssemblies();
-            Start(title, menuItems);
-        }
-        public static void Start(string title, IEnumerable<IMenuItem> menuItems)
-        {
-            Console.Title = title;
-            var args = Environment.GetCommandLineArgs();
-            if (args.Length == 0 || (args.FirstOrDefault() == Assembly.GetEntryAssembly().Location))
+            _settings = new RunnerSettings
             {
-                StartTerminalMode(menuItems);
+                Title = "Command Runner",
+                ScanAllAssemblies = true,
+                ReflectionActivator = true
+            };
+        }
+        public Runner(Action<ICustomizableRunnerConfiguration> configure)
+        {
+            if(configure == null) throw new ArgumentNullException(nameof(configure));
+
+            _settings = new RunnerSettings();
+            configure(_settings);
+        }
+        public void Run()
+        {
+            SetupConsoleTitle();
+            SetupMenu();
+            DeciceMode();
+            Execute();
+        }
+        private void SetupConsoleTitle()
+        {
+            if (!string.IsNullOrWhiteSpace(_settings.Title))
+            {
+                Console.Title = _settings.Title;
+            }
+        }
+        private void SetupMenu()
+        {
+            if (_settings.Menu.Any())
+            {
+                return;
+            }
+            var commandMethods = CommandMethodReflector.GetCommandMethods(_settings)?.ToList();
+            var menu = new List<IMenuItem>();
+            if (commandMethods == null)
+            {
+                Console.WriteLine("Please make sure to setup command scanning or provide your own commands.");
+            }
+            else if (commandMethods.Count == 0)
+            {
+                Console.WriteLine("No commands found.");
+                return;
             }
             else
             {
-                RunCommand(menuItems.OfType<ICommand>(), args);
-                Console.WriteLine("Press enter to quit.");
-                Console.ReadLine();
-
+                menu.AddRange(MenuCreator.CreateMenuItems(commandMethods, _settings));
+            }
+            _settings.Menu = menu;
+        }
+        private void DeciceMode()
+        {
+            if (_settings.ForceCommandLine)
+            {
+                _settings.Mode = RunMode.CommandLine;
+            }
+            else if (_settings.ForceTerminal)
+            {
+                _settings.Mode = RunMode.Terminal;
+            }
+            else
+            {
+                var args = Environment.GetCommandLineArgs();
+                if (args.Length == 0 || (args.FirstOrDefault() == Assembly.GetEntryAssembly().Location))
+                {
+                    _settings.Mode = RunMode.Terminal;
+                }
+                else
+                {
+                    _settings.Mode = RunMode.CommandLine;
+                }
             }
         }
-        public static void ScanAndRunCommand(IEnumerable<string> arguments)
+        private void Execute()
         {
-            var reflectionParser = new ReflectionParser();
-            var commands = reflectionParser.ReflectAllAssemblies();
-            RunCommand(commands.OfType<ICommand>(), arguments);
+            if (_settings.Mode == RunMode.CommandLine)
+            {
+                RunCommandLineMode();
+            }
+            else if (_settings.Mode == RunMode.Terminal)
+            {
+                RunTerminalMode();
+            }
         }
-        public static void RunCommand(IEnumerable<ICommand> availableCommands,
-            IEnumerable<string> arguments)
+        private void RunCommandLineMode()
         {
-            var argumentsAsList = arguments.ToList();
-            var command = FindCommand(availableCommands, argumentsAsList);
-            command.Execute(argumentsAsList);
+            var arguments = Environment.GetCommandLineArgs().ToList();
+            var commandWithArgs = InputParser.FindCommand(_settings.Menu.OfType<ICommand>(), arguments);
+            commandWithArgs.Item1.Execute(commandWithArgs.Item2.ToList());
+            Console.WriteLine("Press enter to quit.");
+            Console.ReadLine();
         }
-        public static void StartTerminalMode(IEnumerable<IMenuItem> menuItems)
+        private void RunTerminalMode()
         {
-            var menuItemList = menuItems.ToList();
+            var menuItemList = _settings.Menu;
             if (!menuItemList.Any())
             {
                 Console.WriteLine("Please add commands to add functionality.");
@@ -77,18 +131,18 @@ namespace CommandRunner
                             Console.WriteLine($"  {menuItem.Title.ToLowerInvariant()}: {menuItem.Help}");
                         }
                     }
-                    Console.WriteLine();
                 }
 
                 Console.Write($"{Environment.NewLine}Command> ");
                 input = Console.ReadLine() ?? string.Empty;
-                var inputAsArguments = InputParser.ParseInputToArguments(input).ToList();
-                ICommand command = FindCommand(menuItemList.OfType<ICommand>(), inputAsArguments);
-                if (command != null)
+                var commandWithArgs = InputParser.FindCommand(menuItemList.OfType<ICommand>(), InputParser.ParseInputToArguments(input));
+                if (commandWithArgs != null)
                 {
                     try
                     {
-                        command.Execute(inputAsArguments);
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        commandWithArgs.Item1.Execute(commandWithArgs.Item2.ToList());
+                        Console.ResetColor();
                     }
                     catch (Exception exception)
                     {
@@ -97,31 +151,6 @@ namespace CommandRunner
                     Console.WriteLine();
                 }
             } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
-        }
-        private static ICommand FindCommand(IEnumerable<ICommand> commands, IEnumerable<string> arguments)
-        {
-            var argumentsAsList = arguments.ToList();
-            var commandsAsList = commands.ToList();
-            var firstArgument = argumentsAsList.FirstOrDefault();
-            if (firstArgument == null)
-            {
-                Console.WriteLine("Please provide a valid command. No input provided.");
-                return null;
-            }
-
-            string identifier = string.Empty;
-            foreach (var argument in argumentsAsList)
-            {
-                identifier = string.IsNullOrWhiteSpace(identifier) ? argument : $"{identifier} {argument}";
-                ICommand command = (ICommand)commandsAsList.FirstOrDefault(x => x.Title.Equals(identifier, StringComparison.OrdinalIgnoreCase));
-                if (command != null)
-                {
-                    return command;
-                }
-            }
-            
-            Console.WriteLine($"Please provide a valid command. Input was: {identifier}");
-            return null;
         }
     }
 }
