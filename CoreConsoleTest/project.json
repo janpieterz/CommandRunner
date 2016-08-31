@@ -5,7 +5,7 @@
   },
 
   "dependencies": {
-    "CommandRunner": "1.0.0-*",
+    "CommandRunner": "2.0.0-*",
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"

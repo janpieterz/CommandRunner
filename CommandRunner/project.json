@@ -1,12 +1,18 @@
 {
-  "version": "1.0.0-*",
-
+  "version": "2.0.0-beta",
+  "description": "Simple CommanrRunner to bootstrap console applications",
+  "authors": [ "Jan-Pieter Zoutewelle" ],
   "dependencies": {
     "NETStandard.Library": "1.6.0"
   },
-
+  "packOptions": {
+    "licenseUrl": "https://raw.githubusercontent.com/janpieterz/CommandRunner/master/LICENSE",
+    "projectUrl": "https: //github.com/janpieterz/CommandRunner",
+    "tags": [ "commandrunner", "console", "command", "runner", "line", "argument", "shell" ]
+  },
   "frameworks": {
-    "net45": {}, 
+    "net452": {},
+    "net461": {}, 
     "netstandard1.6": {
       "imports": "dnxcore50",
       "dependencies": {
@@ -17,3 +23,4 @@
     }
   }
 }
+

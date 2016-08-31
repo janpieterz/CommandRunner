@@ -6,58 +6,26 @@ The runner is still in development mode so there will be breaking changes.
 ```c#
 static void Main(string[] args)
 {
-    var program = new Program();
-    program.Run();
+    new Runner.Run();
 }
 
-private void Run()
+public class EchoCommand 
 {
-    Runner.Start(
-        new GoogleSearchCommand(),
-        new XyZCommand()
-        );
+
+    [Command("echo", "Echo back anything following the command.")]
+    public void Execute(List<string> args)
+    {
+        foreach (var arg in args) Console.WriteLine(arg);
+    }
 }
 
-public class GoogleSearchCommand : ICommand
-  {
-      public IEnumerable<string> Help => new List<string>()
-      {
-          "text <searchcontent>",
-          "image <searchcontent>"
-      };
-
-      public string Command => "googlesearch";
-      public void Execute(IEnumerable<string> arguments)
-      {
-          var args = arguments.ToList();
-          if (!args.Any())
-          {
-              ConsoleMessages.Error("No arguments provided.");
-              return;
-          }
-
-          if (args[0] == "text")
-          {
-              TextSearch(args.Skip(1).ToList());
-          }
-          else if (args[0] == "image")
-          {
-              ImageSearch(args.Skip(1).ToList());
-          }
-          else
-          {
-              ConsoleMessages.Error("No valid arguments provided.");
-          }
-      }
-
-      private void ImageSearch(List<string> arguments)
-      {
-          throw new System.NotImplementedException();
-      }
-
-      private void TextSearch(List<string> arguments)
-      {
-          throw new System.NotImplementedException();
-      }
-  }
+[Command("nest")]
+public class NestingCommand
+{
+    [Command("hello", "Say hello")]
+    public void Hello()
+    {
+        Console.WriteLine("Hello");
+    }
+}
 ```
