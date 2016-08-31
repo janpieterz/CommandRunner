@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
-namespace CommandRunner.Parse
+namespace CommandRunner
 {
     public class ReflectionParser
     {

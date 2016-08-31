@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CommandRunner.Parse;
 
 namespace CommandRunner
 {
@@ -124,6 +123,5 @@ namespace CommandRunner
             Console.WriteLine($"Please provide a valid command. Input was: {identifier}");
             return null;
         }
-
     }
 }

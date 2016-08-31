@@ -1,4 +1,4 @@
-﻿namespace CommandRunner.Parse
+﻿namespace CommandRunner
 {
     internal class ContainerCommand : IMenuItem
     {

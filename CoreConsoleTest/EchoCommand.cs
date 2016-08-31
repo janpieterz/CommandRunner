@@ -4,7 +4,7 @@ using CommandRunner;
 
 namespace CommandRunnerCoreTest
 {
-    public class EchoCommand : ICommand
+    public class EchoCommand : ICommand 
     {
         public string Title => "Echo";
         public string Help => "Echo back anything following the command.";
@@ -23,6 +23,15 @@ namespace CommandRunnerCoreTest
         public void Hello()
         {
             Console.WriteLine("Hello");
+        }
+    }
+
+    public class KevCommand
+    {
+        [Command("kev says hi", "Kev is saying hi")]
+        public void TestingStuff()
+        {
+            Console.WriteLine("Kev is saying hi");
         }
     }
 }

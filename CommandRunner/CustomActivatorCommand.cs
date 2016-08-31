@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CommandRunner.Parse
+namespace CommandRunner
 {
     public class CustomActivatorCommand : ICommand
     {
