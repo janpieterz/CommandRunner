@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta",
+  "version": "2.0.0-beta01",
   "description": "Simple CommanrRunner to bootstrap console applications",
   "authors": [ "Jan-Pieter Zoutewelle" ],
   "dependencies": {
