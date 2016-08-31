@@ -7,7 +7,7 @@
   },
   "packOptions": {
     "licenseUrl": "https://raw.githubusercontent.com/janpieterz/CommandRunner/master/LICENSE",
-    "projectUrl": "https: //github.com/janpieterz/CommandRunner",
+    "projectUrl": "https://github.com/janpieterz/CommandRunner",
     "tags": [ "commandrunner", "console", "command", "runner", "line", "argument", "shell" ]
   },
   "frameworks": {
