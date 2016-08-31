@@ -14,7 +14,7 @@ namespace CommandRunner
             if (firstArgument == null)
             {
                 Console.WriteLine("Please provide a valid command. No input provided.");
-                return null;
+                return new Tuple<ICommand, IEnumerable<string>>(null, null);
             }
 
             string identifier = string.Empty;
@@ -30,7 +30,7 @@ namespace CommandRunner
             }
 
             Console.WriteLine($"Please provide a valid command. Input was: {identifier}");
-            return null;
+            return new Tuple<ICommand, IEnumerable<string>>(null, null);
         }
         public static IEnumerable<string> ParseInputToArguments(string input)
         {

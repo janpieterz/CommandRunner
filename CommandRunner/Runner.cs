@@ -74,7 +74,7 @@ namespace CommandRunner
             else
             {
                 var args = Environment.GetCommandLineArgs();
-                if (args.Length == 0 || (args.FirstOrDefault() == Assembly.GetEntryAssembly().Location))
+                if (args.Length == 0 || (args.FirstOrDefault() == Assembly.GetEntryAssembly().Location || args.FirstOrDefault().Contains("vshost.exe")))
                 {
                     _settings.Mode = RunMode.Terminal;
                 }
@@ -99,7 +99,7 @@ namespace CommandRunner
         {
             var arguments = Environment.GetCommandLineArgs().ToList();
             var commandWithArgs = InputParser.FindCommand(_settings.Menu.OfType<ICommand>(), arguments);
-            commandWithArgs.Item1.Execute(commandWithArgs.Item2.ToList());
+            commandWithArgs.Item1?.Execute(commandWithArgs.Item2.ToList());
             Console.WriteLine("Press enter to quit.");
             Console.ReadLine();
         }
@@ -115,7 +115,11 @@ namespace CommandRunner
             do
             {
                 Console.WriteLine($"Available commands:");
-                menuItemList = menuItemList.OrderBy(x => x.Title).ToList();
+                menuItemList = menuItemList.OrderBy(x => x.Title)?.ToList();
+                if (menuItemList == null)
+                {
+                    Console.WriteLine("No available commands. Make sure you provided commands.");
+                }
                 var groupedMenuItems = menuItemList.GroupBy(x => x.Title.Split(' ')[0]);
                 foreach (IGrouping<string, IMenuItem> groupedMenuItem in groupedMenuItems)
                 {
@@ -136,7 +140,7 @@ namespace CommandRunner
                 Console.Write($"{Environment.NewLine}Command> ");
                 input = Console.ReadLine() ?? string.Empty;
                 var commandWithArgs = InputParser.FindCommand(menuItemList.OfType<ICommand>(), InputParser.ParseInputToArguments(input));
-                if (commandWithArgs != null)
+                if (commandWithArgs.Item1 != null)
                 {
                     try
                     {
