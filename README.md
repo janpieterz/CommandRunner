@@ -30,6 +30,8 @@ public class NestingCommand
 }
 ```
 
+For more usage refer to the CoreConsoleTest app where you should be able to easily play around with all concepts and options.
+
 # Advanced usage
 
 ## Using custom creator
@@ -54,4 +56,35 @@ private static IContainer CreateContainer()
     builder.RegisterType<NestingCommand>().PropertiesAutowired();
     return builder.Build();
 }
+```
+
+## Using provided assemblies
+
+```c#
+new Runner(options =>
+{
+    options.Scan.SpecificAssemblies(new List<Assembly>() {Assembly.GetEntryAssembly()});
+}).Run();
+```
+
+## Using provided types
+
+```c#
+new Runner(options =>
+{
+    options.Scan.SpecificTypes(new List<Type>() { typeof(EchoCommand)});
+}).Run();
+```
+
+## Using custom menu
+
+```
+new Runner(options =>
+{
+    options.UseMenuItems(new List<IMenuItem>()
+    {
+        new ReflectedMethodCommand("reflect", "Custom reflected method command", GetTestMethodInfo()),
+        new CustomActivatorCommand("activator", "Custom activator method command", GetTestMethodInfo(), type => new NestingCommand())
+    }); 
+}).Run();
 ```
