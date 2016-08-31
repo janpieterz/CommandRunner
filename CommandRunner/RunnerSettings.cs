@@ -6,7 +6,12 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public class RunnerSettings : IConfigureActivation, IConfigureScanning, ICustomizableRunnerConfiguration
+    public class RunnerSettings : 
+        IConfigureActivation, 
+        IConfigureScanning, 
+        ICustomizableRunnerConfiguration,
+        IActivationConfiguration,
+        IScanningConfiguration
     {
         public Func<Type, object> Activator { get; internal set; }
         public bool ReflectionActivator { get; internal set; }
@@ -63,12 +68,23 @@ namespace CommandRunner
         }
     }
 
+    internal interface IActivationConfiguration
+    {
+        bool ReflectionActivator { get; }
+        Func<Type, object> Activator { get; }
+    }
+
     public interface IConfigureActivation
     {
         ICustomizableRunnerConfiguration WithReflectionActivator();
         ICustomizableRunnerConfiguration WithCustomActivator(Func<Type, object> activator);
-        bool ReflectionActivator { get; }
-        Func<Type, object> Activator { get; }
+    }
+
+    internal interface IScanningConfiguration
+    {
+        bool ScanAllAssemblies { get; }
+        IReadOnlyCollection<Assembly> SpecificAssembliesToScan { get; }
+        IReadOnlyCollection<Type> SpecificTypesToScan { get; }
     }
 
     public interface IConfigureScanning
@@ -76,10 +92,6 @@ namespace CommandRunner
         void AllAssemblies();
         void SpecificAssemblies(IEnumerable<Assembly> assemblies);
         void SpecificTypes(IEnumerable<Type> types);
-        bool ScanAllAssemblies { get;}
-        IReadOnlyCollection<Assembly> SpecificAssembliesToScan { get; }
-        IReadOnlyCollection<Type> SpecificTypesToScan { get; }
-
     }
 
     public interface ICustomizableRunnerConfiguration

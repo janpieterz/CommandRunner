@@ -5,8 +5,8 @@ namespace CommandRunner
 {
     public class MenuCreator
     {
-        public static IEnumerable<IMenuItem> CreateMenuItems(List<MethodInfo> commandMethods,
-            IConfigureActivation activationConfiguration)
+        internal static IEnumerable<IMenuItem> CreateMenuItems(List<MethodInfo> commandMethods,
+            IActivationConfiguration activationConfiguration)
         {
             var menuItems = new List<IMenuItem>();
             commandMethods.ForEach(commandMethod =>

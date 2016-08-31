@@ -5,7 +5,7 @@ namespace CommandRunner
 {
     public class CommandMethodReflector
     {
-        public static IEnumerable<MethodInfo> GetCommandMethods(IConfigureScanning scanningConfiguration)
+        internal static IEnumerable<MethodInfo> GetCommandMethods(IScanningConfiguration scanningConfiguration)
         {
             if (scanningConfiguration.ScanAllAssemblies)
             {
