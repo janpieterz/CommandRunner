@@ -29,3 +29,29 @@ public class NestingCommand
     }
 }
 ```
+
+# Advanced usage
+
+## Using custom creator
+
+```c#
+private static void RunWithAutofacCreator()
+{
+    var container = CreateContainer();
+    new Runner(options =>
+    {
+        options.Title = "Command Runner";
+        options.Scan.AllAssemblies();
+        options.Activate.WithCustomActivator(type => container.Resolve(type));
+    }).Run();
+}
+
+private static IContainer CreateContainer()
+{
+    var builder = new ContainerBuilder();
+    builder.RegisterType<EchoCommand>().PropertiesAutowired();
+    builder.RegisterType<Injectable>().PropertiesAutowired();
+    builder.RegisterType<NestingCommand>().PropertiesAutowired();
+    return builder.Build();
+}
+```
