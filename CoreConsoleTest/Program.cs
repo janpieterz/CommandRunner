@@ -9,7 +9,7 @@ namespace CommandRunner.CoreConsoleTest
     {
         public static void Main(string[] args)
         {
-            //RunWithDefaults();
+            RunWithDefaults();
             //RunWithAutofacCreator();
             //RunWithProvidedAssemblies();
             //RunWithProvidedTypes();
@@ -45,6 +45,8 @@ namespace CommandRunner.CoreConsoleTest
                 options.ForceCommandLine = true;
                 options.ForceTerminal = true;
                 options.UseMenuItems(new List<IMenuItem>());
+                options.CommandColor = ConsoleColor.White;
+                options.RunnerColor = ConsoleColor.Green;
             }).Run();
         }
 

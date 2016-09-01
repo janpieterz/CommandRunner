@@ -26,11 +26,18 @@ namespace CommandRunner
         }
         public void Run()
         {
-            SetupConsoleTitle();
+            SetupConsole();
             SetupMenu();
             DeciceMode();
             Execute();
         }
+
+        private void SetupConsole()
+        {
+            SetupConsoleTitle();
+            SetupConsoleRunnerColor();
+        }
+
         private void SetupConsoleTitle()
         {
             if (!string.IsNullOrWhiteSpace(_settings.Title))
@@ -38,6 +45,17 @@ namespace CommandRunner
                 Console.Title = _settings.Title;
             }
         }
+
+        private void SetupConsoleRunnerColor()
+        {
+            Console.ForegroundColor = _settings.RunnerColor;
+        }
+
+        private void SetupConsoleCommandColor()
+        {
+            Console.ForegroundColor = _settings.CommandColor;
+        }
+
         private void SetupMenu()
         {
             if (_settings.Menu.Any())
@@ -144,13 +162,16 @@ namespace CommandRunner
                 {
                     try
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        SetupConsoleCommandColor();
                         commandWithArgs.Item1.Execute(commandWithArgs.Item2.ToList());
-                        Console.ResetColor();
                     }
                     catch (Exception exception)
                     {
                         Console.WriteLine(exception.ToString());
+                    }
+                    finally
+                    {
+                        SetupConsoleRunnerColor();
                     }
                     Console.WriteLine();
                 }

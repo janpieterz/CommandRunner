@@ -21,6 +21,8 @@ namespace CommandRunner
         public string Title { get; set; }
         public bool ForceTerminal { get; set; }
         public bool ForceCommandLine { get; set; }
+        public ConsoleColor RunnerColor { get; set; } = ConsoleColor.Green;
+        public ConsoleColor CommandColor { get; set; } = ConsoleColor.White;
         public void UseMenuItems(IEnumerable<IMenuItem> menuItems)
         {
             Menu = menuItems.ToList();
@@ -102,6 +104,8 @@ namespace CommandRunner
         bool ForceTerminal { get; set; }
         bool ForceCommandLine { get; set; }
         void UseMenuItems(IEnumerable<IMenuItem> menuItems);
+        ConsoleColor CommandColor { get; set; }
+        ConsoleColor RunnerColor { get; set; }
     }
 
     internal enum RunMode
