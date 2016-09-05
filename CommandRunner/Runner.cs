@@ -146,7 +146,7 @@ namespace CommandRunner
                     {
                         if (menuItem is ContainerCommand)
                         {
-                            Console.WriteLine($"  {menuItem.Title.ToLowerInvariant()} {menuItem.Help}");
+                            Console.WriteLine($"{menuItem.Title.ToLowerInvariant()} {menuItem.Help}");
                         }
                         else
                         {
