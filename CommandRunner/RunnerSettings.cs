@@ -33,6 +33,7 @@ namespace CommandRunner
         public IConfigureActivation Activate => this;
 
         IConfigureScanning ICustomizableRunnerConfiguration.Scan => this;
+        public ConsoleColor ErrorColor { get; set; } = ConsoleColor.Red;
 
         public void AllAssemblies()
         {

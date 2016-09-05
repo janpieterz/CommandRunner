@@ -56,6 +56,11 @@ namespace CommandRunner
             Console.ForegroundColor = _settings.CommandColor;
         }
 
+        private void SetupConsoleErrorColor()
+        {
+            Console.ForegroundColor = _settings.ErrorColor;
+        }
+
         private void SetupMenu()
         {
             if (_settings.Menu.Any())
@@ -66,11 +71,11 @@ namespace CommandRunner
             var menu = new List<IMenuItem>();
             if (commandMethods == null)
             {
-                Console.WriteLine("Please make sure to setup command scanning or provide your own commands.");
+                WriteErrorMessage("Please make sure to setup command scanning or provide your own commands.");
             }
             else if (commandMethods.Count == 0)
             {
-                Console.WriteLine("No commands found.");
+                WriteErrorMessage("No commands found.");
                 return;
             }
             else
@@ -126,18 +131,14 @@ namespace CommandRunner
             var menuItemList = _settings.Menu;
             if (!menuItemList.Any())
             {
-                Console.WriteLine("Please add commands to add functionality.");
+                WriteErrorMessage("Please add commands to add functionality.");
                 return;
             }
             string input;
             do
             {
                 Console.WriteLine($"Available commands:");
-                menuItemList = menuItemList.OrderBy(x => x.Title)?.ToList();
-                if (menuItemList == null)
-                {
-                    Console.WriteLine("No available commands. Make sure you provided commands.");
-                }
+                menuItemList = menuItemList.OrderBy(x => x.Title).ToList();
                 var groupedMenuItems = menuItemList.GroupBy(x => x.Title.Split(' ')[0]);
                 foreach (IGrouping<string, IMenuItem> groupedMenuItem in groupedMenuItems)
                 {
@@ -157,7 +158,9 @@ namespace CommandRunner
 
                 Console.Write($"{Environment.NewLine}Command> ");
                 input = Console.ReadLine() ?? string.Empty;
+                SetupConsoleErrorColor();
                 var commandWithArgs = InputParser.FindCommand(menuItemList.OfType<ICommand>(), InputParser.ParseInputToArguments(input));
+                SetupConsoleRunnerColor();
                 if (commandWithArgs.Item1 != null)
                 {
                     try
@@ -167,7 +170,7 @@ namespace CommandRunner
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine(exception.ToString());
+                        WriteErrorMessage(exception.Message);
                     }
                     finally
                     {
@@ -176,6 +179,13 @@ namespace CommandRunner
                     Console.WriteLine();
                 }
             } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void WriteErrorMessage(string error)
+        {
+            SetupConsoleErrorColor();
+            Console.WriteLine(error);
+            SetupConsoleRunnerColor();
         }
     }
 }
