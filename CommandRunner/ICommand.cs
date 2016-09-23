@@ -4,7 +4,7 @@ namespace CommandRunner
 {
     public interface ICommand : IMenuItem
     { 
-        void Execute(List<string> args);
+        void Execute(List<string> arguments);
 
     }
 }

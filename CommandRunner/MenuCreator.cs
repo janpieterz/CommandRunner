@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace CommandRunner
@@ -14,18 +15,40 @@ namespace CommandRunner
                 var commandAttribute = commandMethod.GetCustomAttribute<CommandAttribute>();
                 var attributeOnClass = commandMethod.DeclaringType.GetTypeInfo().GetCustomAttribute<CommandAttribute>();
                 var identifier = commandAttribute.Identifier;
+                ContainerCommand container = null;
                 if (attributeOnClass != null)
                 {
                     identifier = attributeOnClass.Identifier + " " + identifier;
-                    menuItems.Add(new ContainerCommand(attributeOnClass.Identifier, attributeOnClass.Help));
+                    var containerItem = menuItems.SingleOrDefault(x => x.Title == attributeOnClass.Identifier);
+                    if (containerItem == null)
+                    {
+                        container = new ContainerCommand(attributeOnClass.Identifier, attributeOnClass.Help);
+                        menuItems.Add(container);
+                    }
+                    else
+                    {
+                        container = (ContainerCommand) containerItem;
+                    }
                 }
+                IMenuItem menuItem;
                 if (activationConfiguration.Activator != null)
                 {
-                    menuItems.Add(new CustomActivatorCommand(identifier, commandAttribute.Help, commandMethod, activationConfiguration.Activator));
+                    menuItem = new CustomActivatorCommand(identifier, commandAttribute.Help, commandMethod,
+                        activationConfiguration.Activator);
+                    //menuItems.Add(new CustomActivatorCommand(identifier, commandAttribute.Help, commandMethod, activationConfiguration.Activator));
                 }
                 else
                 {
-                    menuItems.Add(new ReflectedMethodCommand(identifier, commandAttribute.Help, commandMethod));
+                    menuItem = new ReflectedMethodCommand(identifier, commandAttribute.Help, commandMethod);
+                    //menuItems.Add(new ReflectedMethodCommand(identifier, commandAttribute.Help, commandMethod));
+                }
+                if (container == null)
+                {
+                    menuItems.Add(menuItem);
+                }
+                else
+                {
+                    container.Items.Add(menuItem);
                 }
             });
             return menuItems;

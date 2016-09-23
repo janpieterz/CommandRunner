@@ -138,28 +138,14 @@ namespace CommandRunner
             do
             {
                 Console.WriteLine($"Available commands:");
+
                 menuItemList = menuItemList.OrderBy(x => x.Title).ToList();
-                var groupedMenuItems = menuItemList.GroupBy(x => x.Title.Split(' ')[0]);
-                foreach (IGrouping<string, IMenuItem> groupedMenuItem in groupedMenuItems)
-                {
-                    Console.WriteLine();
-                    foreach (IMenuItem menuItem in groupedMenuItem)
-                    {
-                        if (menuItem is ContainerCommand)
-                        {
-                            Console.WriteLine($"{menuItem.Title.ToLowerInvariant()} {menuItem.Help}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"  {menuItem.Title.ToLowerInvariant()}: {menuItem.Help}");
-                        }
-                    }
-                }
+                menuItemList.ForEach(OutputMenuItem);
 
                 Console.Write($"{Environment.NewLine}Command> ");
                 input = Console.ReadLine() ?? string.Empty;
                 SetupConsoleErrorColor();
-                var commandWithArgs = InputParser.FindCommand(menuItemList.OfType<ICommand>(), InputParser.ParseInputToArguments(input));
+                var commandWithArgs = InputParser.FindCommand(menuItemList, InputParser.ParseInputToArguments(input));
                 SetupConsoleRunnerColor();
                 if (commandWithArgs.Item1 != null)
                 {
@@ -179,6 +165,21 @@ namespace CommandRunner
                     Console.WriteLine();
                 }
             } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void OutputMenuItem(IMenuItem menuItem)
+        {
+            if (menuItem is ContainerCommand)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"{menuItem.Title.ToLowerInvariant()} {menuItem.Help}");
+                (menuItem as ContainerCommand).Items.ForEach(OutputMenuItem);
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine($"  {menuItem.Title.ToLowerInvariant()}: {menuItem.Help}");
+            }
         }
 
         private void WriteErrorMessage(string error)

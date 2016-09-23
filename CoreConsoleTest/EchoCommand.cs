@@ -13,5 +13,17 @@ namespace CommandRunner.CoreConsoleTest
         {
             foreach (var arg in args) Console.WriteLine(arg);
         }
+
+        [Command("techo", "Echo back with parsed param")]
+        public void Execute(string whatever, bool say, int count, Guid itemId)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (say)
+                {
+                    Console.WriteLine(whatever);
+                }
+            }
+        }
     }
 }

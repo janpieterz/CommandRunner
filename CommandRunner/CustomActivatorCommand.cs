@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public class CustomActivatorCommand : ICommand
+    public class CustomActivatorCommand : TypedParameterExecution, ICommand
     {
         private readonly MethodInfo _methodInfo;
         private readonly Func<Type, object> _activator;
@@ -18,18 +18,10 @@ namespace CommandRunner
             Title = title;
             Help = help;
         }
-        public void Execute(List<string> args)
+        public void Execute(List<string> arguments)
         {
             object @class = _activator(_methodInfo.DeclaringType);
-            if (_methodInfo.GetParameters().Length > 0)
-            {
-                _methodInfo.Invoke(@class, new object[] {args});
-            }
-            else
-            {
-                _methodInfo.Invoke(@class, null);
-            }
-            
+            Execute(@class, _methodInfo, arguments);
         }
     }
 }

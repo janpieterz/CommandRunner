@@ -10,5 +10,11 @@ namespace CommandRunner.CoreConsoleTest
         {
             Console.WriteLine("Hello");
         }
+
+        [Command("hi", "Say hi")]
+        public void SayHi()
+        {
+            Console.WriteLine("Hi");
+        }
     }
 }

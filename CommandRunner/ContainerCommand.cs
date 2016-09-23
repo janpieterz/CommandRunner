@@ -1,4 +1,6 @@
-﻿namespace CommandRunner
+﻿using System.Collections.Generic;
+
+namespace CommandRunner
 {
     internal class ContainerCommand : IMenuItem
     {
@@ -10,5 +12,6 @@
 
         public string Title { get; }
         public string Help { get; }
+        public List<IMenuItem> Items { get; set; } = new List<IMenuItem>();
     }
 }

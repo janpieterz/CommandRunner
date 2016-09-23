@@ -31,6 +31,7 @@ public class NestingCommand
 ```
 
 For more usage refer to the CoreConsoleTest app where you should be able to easily play around with all concepts and options.
+The library will try to map the arguments if it sees typed arguments. To prevent this, accept a list of strings in your method to parse it yourself, or no parameter at all.
 
 # Advanced usage
 

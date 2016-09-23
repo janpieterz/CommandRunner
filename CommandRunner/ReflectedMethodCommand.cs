@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace CommandRunner
 {
-    public class ReflectedMethodCommand : ICommand
+    public class ReflectedMethodCommand : TypedParameterExecution, ICommand
     {
         private readonly MethodInfo _methodInfo;
         public string Title { get; private set; }
@@ -16,17 +17,10 @@ namespace CommandRunner
             Help = help;
         }
 
-        void ICommand.Execute(List<string> args)
+        void ICommand.Execute(List<string> arguments)
         {
             var @class = Activator.CreateInstance(_methodInfo.DeclaringType);
-            if (_methodInfo.GetParameters().Length > 0)
-            {
-                _methodInfo.Invoke(@class, new object[] {args});
-            }
-            else
-            {
-                _methodInfo.Invoke(@class, null);
-            }
+            Execute(@class, _methodInfo, arguments);
         }
     }
 }
