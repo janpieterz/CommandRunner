@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
-
+using CommandRunner;
 namespace CommandRunner.CoreConsoleTest
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            RunWithDefaults();
+            RunnerConfiguration configuration = new RunnerConfiguration("Testing config");
+            configuration.ForceCommandLine();
+            // RunWithDefaults();
             //RunWithAutofacCreator();
             //RunWithProvidedAssemblies();
             //RunWithProvidedTypes();

@@ -11,7 +11,7 @@
     "tags": [ "commandrunner", "console", "command", "runner", "line", "argument", "shell" ]
   },
   "frameworks": {
-    "net4.5": {},
+    // "net4.5": {},
     "netstandard1.6": {
       "imports": "dnxcore50",
       "dependencies": {

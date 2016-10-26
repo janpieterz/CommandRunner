@@ -8,7 +8,7 @@ namespace CommandRunner
 {
     public class TypedParameterExecution
     {
-        public void Execute(object @class, MethodInfo methodInfo, List<string> arguments)
+        public static void Execute(object @class, MethodInfo methodInfo, List<string> arguments)
         {
             var parameters = methodInfo.GetParameters();
             if (parameters.Length > 0)
@@ -31,7 +31,7 @@ namespace CommandRunner
                 methodInfo.Invoke(@class, null);
             }
         }
-        private object[] CreateTypedParameters(ParameterInfo[] parameters, List<string> arguments)
+        private static object[] CreateTypedParameters(ParameterInfo[] parameters, List<string> arguments)
         {
             List<object> typedParameters = new List<object>();
             for (var i = 0; i < parameters.Length; i++)
@@ -43,7 +43,7 @@ namespace CommandRunner
             return typedParameters.ToArray();
         }
 
-        private object CreateTypedParameter(ParameterInfo parameter, string argument)
+        private static object CreateTypedParameter(ParameterInfo parameter, string argument)
         {
             if (IsPrimitiveType(parameter.ParameterType))
             {
@@ -55,13 +55,13 @@ namespace CommandRunner
             }
         }
 
-        private object MakeType(Type type, string value)
+        private static object MakeType(Type type, string value)
         {
             var ctor = type.GetTypeInfo().GetConstructor(new[] { typeof(string) });
             return ctor.Invoke(new object[] { value });
         }
 
-        private object ChangeType(Type type, string value)
+        private static object ChangeType(Type type, string value)
         {
             if (type == typeof(bool))
             {
@@ -77,7 +77,7 @@ namespace CommandRunner
             }
         }
 
-        private bool IsPrimitiveType(Type type)
+        private static bool IsPrimitiveType(Type type)
         {
             return (type.GetTypeInfo().IsValueType && type != typeof(Guid)) || type.GetTypeInfo().IsPrimitive ||
                    new[] { typeof(string), typeof(decimal), typeof(DateTime), typeof(DateTimeOffset), typeof(TimeSpan) }

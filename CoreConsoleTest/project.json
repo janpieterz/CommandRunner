@@ -6,7 +6,9 @@
 
   "dependencies": {
     "Autofac": "4.1.0",
-    "CommandRunner": "2.0.0-*",
+    "CommandRunner": {
+      "target":"project"
+    }, 
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"
