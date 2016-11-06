@@ -1,54 +1,177 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CommandRunner.Terminal;
 using CommandRunner.CommandLine;
+
 namespace CommandRunner {
     class InitializableRunner {
-        RunnerConfiguration Configuration;
+        readonly RunnerConfiguration _configuration;
         public InitializableRunner(RunnerConfiguration configuration) {
-            Configuration = configuration;
+            _configuration = configuration;
         }
 
         public IStartableRunner Initialize() {
             ScanTypes();
-            //TODO: Scan and setup commands/menu
-            //TODO: Setup Console writer with color
+            
+            //TODO: Scan for command dupes or commands with help and throw errors
+            //TODO: Scan for IEnumerable that are not the last parameter and throw error
             return CreateRunnerForMode();
         }
-        private void DecideMode() {
-            if (!Configuration.RunMode.HasValue) {
+        private void SetMode() {
+            if (!_configuration.RunMode.HasValue) {
                 var args = Environment.GetCommandLineArgs();
                 if (args.Length == 0 || (args.FirstOrDefault() == Assembly.GetEntryAssembly().Location || args.FirstOrDefault().Contains("vshost.exe")))
                 {
-                    Configuration.RunMode = RunModes.Terminal;
+                    _configuration.RunMode = RunModes.Terminal;
                 }
                 else
                 {
-                    Configuration.RunMode = RunModes.CommandLine;
+                    _configuration.RunMode = RunModes.CommandLine;
                 }
             }
         }
 
-        private void ScanTypes() {
-            
+        private void ScanTypes()
+        {
+            var nestedCommands = _configuration.TypesToScan.Where(x =>
+            {
+                var typeInfo = x.GetTypeInfo();
+                return typeInfo.GetCustomAttribute<NestedCommandAttribute>() != null;
+            });
+            List<IWritableMenuItem> commands = new List<IWritableMenuItem>();
+            foreach (var nestedCommand in nestedCommands)
+            {
+                var nestedAttribute = nestedCommand.GetTypeInfo().GetCustomAttribute<NestedCommandAttribute>();
+                var nestedMethods = nestedCommand.GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
+                foreach (MethodInfo methodInfo in nestedMethods)
+                {
+                    var methodAttribute = methodInfo.GetCustomAttribute<CommandAttribute>();
+                    var parameters = methodInfo.GetParameters();
+                    
+                    var command = new Command()
+                    {
+                        Identifier = $"{nestedAttribute.Identifier.Trim().ToLowerInvariant()} {methodAttribute.Identifier.Trim().ToLowerInvariant()}",
+                        Help = methodAttribute.Help,
+                        Parameters = parameters.ToList()
+                    };
+                    commands.Add(command);
+                }
+            }
+
+            var navigatableCommands =
+                _configuration.TypesToScan.Where(
+                    x => x.GetTypeInfo().GetCustomAttribute<NavigatableCommandAttribute>() != null);
+            var navigatableTypes = new List<Type>();
+            foreach (Type navigatableCommand in navigatableCommands)
+            {
+                var navigatableAttribute = navigatableCommand.GetTypeInfo().GetCustomAttribute<NavigatableCommandAttribute>();
+                var menuItem = ProcessNavigatableCommand(navigatableCommand, navigatableAttribute, navigatableTypes);
+                commands.Add(menuItem);
+            }
+
+            var typesLeft = _configuration.TypesToScan.Where(
+                x =>
+                    navigatableTypes.All(y => y != x) &&
+                    x.GetTypeInfo().GetCustomAttribute<NestedCommandAttribute>() == null);
+            foreach (Type type in typesLeft)
+            {
+                var methods = type.GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
+                foreach (MethodInfo methodInfo in methods)
+                {
+                    var methodAttribute = methodInfo.GetCustomAttribute<CommandAttribute>();
+                    commands.Add(new Command()
+                    {
+                        Identifier = methodAttribute.Identifier.Trim().ToLowerInvariant(),
+                        Help = methodAttribute.Help,
+                        Parameters = methodInfo.GetParameters().ToList()
+                    });
+                }
+            }
+
+
+            _configuration.Menu = commands;
+            //GET ALL nested/navigatable
+            //PROCESS these
+            //GET ALL COMMANDS WITHOUT A NEST/NAV, ensure no nav property contains any of these
+
         }
         private IStartableRunner CreateRunnerForMode()
         {            
-            DecideMode();
-            if(!Configuration.RunMode.HasValue) {
+            SetMode();
+            if(!_configuration.RunMode.HasValue) {
                 throw new Exception("No correct runmode found.");
             }
 
-            if(Configuration.RunMode.Value == RunModes.Terminal) {
-                return new TerminalRunner(Configuration);
+            if(_configuration.RunMode.Value == RunModes.Terminal) {
+                return new TerminalRunner(_configuration);
             }
-            else if(Configuration.RunMode.Value == RunModes.CommandLine) {
-                return new CommandLineRunner(Configuration);
+            if(_configuration.RunMode.Value == RunModes.CommandLine) {
+                return new CommandLineRunner(_configuration);
             }
-            else {
-                throw new Exception("No correct runmode found.");
-            }
+            throw new Exception("No correct runmode found.");
         }
+
+        public NavigatableCommand ProcessNavigatableCommand(Type navigatableCommand, NavigatableCommandAttribute navigatableAttribute, List<Type> scannedTypes)
+        {
+            scannedTypes.Add(navigatableCommand);
+            var initializeMethods =
+                navigatableCommand.GetMethods()
+                    .Where(x => x.GetCustomAttribute<NavigatableCommandInitialisationAttribute>() != null).ToList();
+            if (initializeMethods.Count == 0)
+            {
+                throw new Exception(
+                    $"{navigatableCommand.Name} does not have a method with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
+            }
+            if (initializeMethods.Count > 1)
+            {
+                throw new Exception(
+                    $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
+            }
+            var initializeMethod = initializeMethods.Single();
+            var subItems = new List<IWritableMenuItem>();
+
+            var commandMethods =
+                navigatableCommand.GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
+            foreach (MethodInfo commandMethod in commandMethods)
+            {
+                var methodAttribute = commandMethod.GetCustomAttribute<CommandAttribute>();
+                var parameters = commandMethod.GetParameters();
+
+                var command = new Command()
+                {
+                    Identifier = methodAttribute.Identifier.Trim().ToLowerInvariant(),
+                    Help = methodAttribute.Help,
+                    Parameters = parameters.ToList()
+                };
+                subItems.Add(command);
+            }
+            var navigatableSubCommands =
+                navigatableCommand.GetProperties()
+                    .Where(x => x.GetCustomAttribute<NavigatableCommandAttribute>() != null);
+            foreach (PropertyInfo navigatableSubCommand in navigatableSubCommands)
+            {
+                scannedTypes.Add(navigatableSubCommand.PropertyType);
+                subItems.Add(ProcessNavigatableCommand(navigatableSubCommand.PropertyType, navigatableSubCommand.GetCustomAttribute<NavigatableCommandAttribute>(), scannedTypes));
+            }
+            return new NavigatableCommand
+            {
+                Identifier = navigatableAttribute.Identifier.Trim().ToLowerInvariant(),
+                Help = navigatableAttribute.Help,
+                Parameters = initializeMethod.GetParameters().ToList(),
+                SubItems = subItems
+            };
+        }
+    }
+
+    public interface IWritableMenuItem
+    {
+        List<ParameterInfo> Parameters { get; }
+        string Identifier { get; }
+        void WriteToConsole();
+        MatchState Match(List<string> arguments);
+        List<string> ArgumentsWithoutIdentifier(List<string> arguments);
+
     }
 }

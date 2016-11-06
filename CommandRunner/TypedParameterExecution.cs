@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -31,27 +32,52 @@ namespace CommandRunner
                 methodInfo.Invoke(@class, null);
             }
         }
-        private static object[] CreateTypedParameters(ParameterInfo[] parameters, List<string> arguments)
+        public static object[] CreateTypedParameters(ParameterInfo[] parameters, List<string> arguments)
         {
             List<object> typedParameters = new List<object>();
-            for (var i = 0; i < parameters.Length; i++)
+            bool encounteredIList = parameters.Any() && parameters.LastOrDefault().ParameterType.IsIList();
+
+            for (var i = 0; i < (encounteredIList ? parameters.Length - 1 : parameters.Length); i++)
             {
                 var parameter = parameters[i];
+                if (parameter.ParameterType.IsIList())
+                {
+                    throw new Exception("Only the last parameter can be an IEnumerable.");
+                }
                 var argument = arguments[i];
-                typedParameters.Add(CreateTypedParameter(parameter, argument));
+                typedParameters.Add(CreateTypedParameter(parameter.ParameterType, argument));
+            }
+            if (encounteredIList)
+            {
+                var parameter = parameters[parameters.Length - 1];
+                
+                var argumentsLeft = arguments.Skip(parameters.Length - 1).ToList();
+                var enumerableType = parameter.ParameterType.GetEnumerableType();
+                
+                
+                List<object> typedArguments = new List<object>();
+                foreach (string argument in argumentsLeft)
+                {
+                    var typedArgument = CreateTypedParameter(enumerableType, argument);
+                    typedArguments.Add(typedArgument);
+                }
+                
+                var typedEnumerable = (IList)MakeIEnumerable(parameter.ParameterType, typedArguments);
+
+                typedParameters.Add(typedEnumerable);
             }
             return typedParameters.ToArray();
         }
 
-        private static object CreateTypedParameter(ParameterInfo parameter, string argument)
+        private static object CreateTypedParameter(Type type, string argument)
         {
-            if (IsPrimitiveType(parameter.ParameterType))
+            if (IsPrimitiveType(type))
             {
-                return ChangeType(parameter.ParameterType, argument);
+                return ChangeType(type, argument);
             }
             else
             {
-                return MakeType(parameter.ParameterType, argument);
+                return MakeType(type, argument);
             }
         }
 
@@ -59,6 +85,26 @@ namespace CommandRunner
         {
             var ctor = type.GetTypeInfo().GetConstructor(new[] { typeof(string) });
             return ctor.Invoke(new object[] { value });
+        }
+
+        private static object MakeIEnumerable(Type type, List<object> items)
+        {
+            if (type.IsArray)
+            {
+                var array = Array.CreateInstance(type.GetElementType(), items.Count);
+                for (var i = 0; i < items.Count; i++)
+                {
+                    array.SetValue(items[i], i);
+                }
+                return array;
+            }
+            var ctor = type.GetTypeInfo().GetConstructor(new Type[0]);
+            var enumerable = (IList) ctor.Invoke(new object[] {  });
+            foreach (var item in items)
+            {
+                enumerable.Add(item);
+            }
+            return enumerable;
         }
 
         private static object ChangeType(Type type, string value)

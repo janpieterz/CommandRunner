@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CommandRunner.Terminal {
     internal sealed class TerminalState : State {
@@ -15,7 +17,8 @@ namespace CommandRunner {
         internal List<string> Arguments {get; set;}
         public State (RunnerConfiguration configuration)
         {
-           Configuration = configuration;
+            Configuration = configuration;
+            Arguments = configuration.Arguments ?? Environment.GetCommandLineArgs().ToList();
         }
         //List of scanned results
         //retrieval methods for specific items

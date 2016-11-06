@@ -23,7 +23,7 @@ namespace CommandRunner
                 
         //         if (command != null)
         //         {
-        //             return new Tuple<ICommand, IEnumerable<string>>(command as ICommand, argumentsAsList.Skip(identifier.Split(' ').Length));
+        //             return new Tuple<ICommand, IEnumerable<string>>(command as IWritableMenuItem, argumentsAsList.Skip(identifier.Split(' ').Length));
         //         }
         //     }
 
@@ -66,7 +66,7 @@ namespace CommandRunner
             }
             if (!string.IsNullOrWhiteSpace(buffer))
             {
-                arguments.Add(buffer);
+                arguments.Add(buffer.ToLowerInvariant());
             }
             return arguments;
         }
