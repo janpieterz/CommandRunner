@@ -6,7 +6,7 @@ namespace CommandRunner.Terminal
 {
     public class TerminalRunner : IStartableRunner {
         private readonly RunnerConfiguration _configuration;
-        private TerminalState _state;
+        private readonly TerminalState _state;
         public TerminalRunner (RunnerConfiguration configuration)
         {
             _configuration = configuration;
@@ -16,52 +16,12 @@ namespace CommandRunner.Terminal
         public void Start()
         {
             string input;
-            Console.ForegroundColor = _configuration.TerminalColor;
             do
             {
-                for (int i = 0; i < Console.WindowWidth; i++)
-                {
-                    Console.Write("-");
-                }
-
-                if (_state.ParentHierarchy.Any())
-                {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"{_state.ParentHierarchy.Last().Value.Command.Identifier} menu:");
-                    Console.ForegroundColor = _configuration.TerminalColor;
-                }
-
-                var menuItems = _state.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier);
-                if (menuItems.Any())
-                {
-                    Console.WriteLine("Menu's available (type help x to print sub items):");
-                    foreach (ICommand command in _state.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier))
-                    {
-                        Console.Write("  ");
-                        command.WriteToConsole();
-                    }
-                    Console.WriteLine();
-                }
-
-                var commands = _state.Menu.OfType<SingleCommand>().OrderBy(x => x.Identifier);
-
-                if (commands.Any())
-                {
-                    Console.WriteLine("Commands: ");
-                    foreach (ICommand command in commands)
-                    {
-                        Console.Write("  ");
-                        command.WriteToConsole();
-                    }
-                }
-
-                if (_state.ParentHierarchy.Any())
-                {
-                    Console.WriteLine("To go to the previous menu type `up`");
-                }
-                
-                Console.Write($"{Environment.NewLine}Command> ");
-                input = Console.ReadLine() ?? string.Empty;
+                Console.ForegroundColor = _configuration.TerminalColor;
+                PrintLine();
+                PrintMenu();
+                input = QueryForcommand();
 
                 var arguments = InputParser.ParseInputToArguments(input).ToList();
                 Console.WriteLine();
@@ -73,18 +33,16 @@ namespace CommandRunner.Terminal
                 if (arguments[0] == "help")
                 {
                     var identifier = input.Split(' ')[1];
-                    var item = menuItems.FirstOrDefault(x => x.Identifier == identifier);
+                    var item = _state.NavigatableMenu.FirstOrDefault(x => x.Identifier == identifier);
                     if (item != null)
                     {
-                        Console.WriteLine("MENU:");
-                        item.WriteToConsole();
-                        Console.WriteLine();
-                        item.SubItems.ForEach(x => x.WriteToConsole());
-
+                        Console.WriteLine("Help for: {0}", item.Identifier);
+                        PrintNavigatableItems(item.SubItems.OfType<NavigatableCommand>().ToList());
+                        PrintSingleCommands(item.SubItems.OfType<SingleCommand>().ToList());
+                        
                         Console.WriteLine();
                         Console.Write("Press enter to return to the menu");
                         Console.ReadLine();
-                        continue;
                     }
                     else
                     {
@@ -96,7 +54,6 @@ namespace CommandRunner.Terminal
                 {
                     _state.MoveUp();
                     continue;
-                    //move up a menu
                 }
 
                 var matches =
@@ -135,7 +92,75 @@ namespace CommandRunner.Terminal
             
             Console.ReadLine();
         }
-        
+
+        private string QueryForcommand()
+        {
+            Console.Write($"{Environment.NewLine}Command> ");
+            Console.ForegroundColor = _configuration.CommandColor;
+            return Console.ReadLine() ?? string.Empty;
+        }
+
+        private void PrintMenu()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            string menuIdentifier = "Main";
+            if (_state.ParentHierarchy.Any())
+            {
+                menuIdentifier = _state.ParentHierarchy.Last().Value.Command.Identifier;
+            }
+            Console.WriteLine($"{menuIdentifier} menu:");
+            Console.ForegroundColor = _configuration.TerminalColor;
+
+            if (_state.NavigatableMenu.Any())
+            {
+                PrintNavigatableItems(_state.NavigatableMenu);
+            }
+
+            if (_state.SingleCommands.Any())
+            {
+                PrintSingleCommands(_state.SingleCommands);
+            }
+
+            if (_state.ParentHierarchy.Any())
+            {
+                Console.WriteLine("To go to the previous menu type `up`");
+            }
+        }
+
+        private void PrintNavigatableItems(List<NavigatableCommand> commands)
+        {
+            Console.WriteLine("Sub-menu's available (type help x to print sub items):");
+            foreach (ICommand command in commands.OrderBy(x => x.Identifier))
+            {
+                Console.Write("  ");
+                command.WriteToConsole();
+            }
+            Console.WriteLine();
+        }
+
+        private void PrintSingleCommands(List<SingleCommand> commands)
+        {
+            Console.WriteLine("Commands: ");
+            foreach (SingleCommand command in commands)
+            {
+                PrintCommand(command);
+            }
+        }
+
+        private void PrintCommand(SingleCommand command)
+        {
+            Console.Write("  ");
+            command.WriteToConsole();
+        }
+
+        private void PrintLine()
+        {
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write("-");
+            }
+        }
+
         private void ExecuteCommand(ICommand command, List<string> arguments )
         {
             try
@@ -169,17 +194,6 @@ namespace CommandRunner.Terminal
             {
                 Console.ForegroundColor = _configuration.TerminalColor;
             }
-        }
-    }
-
-    public static class ConsoleWrite
-    {
-        public static void WriteErrorLine(string message)
-        {
-            var previousColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ForegroundColor = previousColor;
         }
     }
 }

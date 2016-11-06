@@ -6,6 +6,8 @@ using System.Reflection;
 namespace CommandRunner.Terminal {
     internal sealed class TerminalState : State {
         internal List<ICommand> Menu { get; private set; }
+        internal List<NavigatableCommand> NavigatableMenu => Menu.OfType<NavigatableCommand>().ToList();
+        internal List<SingleCommand> SingleCommands => Menu.OfType<SingleCommand>().ToList();
         internal Func<Type, object> CommandActivator { get; private set; }
         internal Dictionary<Type, ParentCommand> ParentHierarchy { get; } = new Dictionary<Type, ParentCommand>();
         public TerminalState (RunnerConfiguration configuration) : base(configuration)

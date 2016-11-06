@@ -8,7 +8,7 @@ namespace CommandRunner.CoreConsoleTest
     public class Program
     {
         public static void Main(string[] args)
-        {
+                    {
             RunnerConfiguration configuration = new RunnerConfiguration("Testing config");
             configuration.ScanAllAssemblies();
             configuration.UseReflectionCommandActivator();
