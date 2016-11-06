@@ -24,6 +24,13 @@ namespace CommandRunner.Terminal
                     Console.Write("-");
                 }
 
+                if (_state.ParentHierarchy.Any())
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"{_state.ParentHierarchy.Last().Value.Command.Identifier} menu:");
+                    Console.ForegroundColor = _configuration.TerminalColor;
+                }
+
                 var menuItems = _state.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier);
                 if (menuItems.Any())
                 {
@@ -46,6 +53,11 @@ namespace CommandRunner.Terminal
                         Console.Write("  ");
                         command.WriteToConsole();
                     }
+                }
+
+                if (_state.ParentHierarchy.Any())
+                {
+                    Console.WriteLine("To go to the previous menu type `up`");
                 }
                 
                 Console.Write($"{Environment.NewLine}Command> ");
@@ -79,6 +91,12 @@ namespace CommandRunner.Terminal
                         ConsoleWrite.WriteErrorLine("Make sure you spelled the menu item correctly.");
                     }
                     continue;
+                }
+                if (arguments[0] == "up")
+                {
+                    _state.MoveUp();
+                    continue;
+                    //move up a menu
                 }
 
                 var matches =

@@ -15,6 +15,8 @@ namespace CommandRunner
         internal Func<Type, object> CommandActivator {get; private set;}
         internal List<Type> TypesToScan {get;} = new List<Type>();
         internal List<string> Arguments { get; set; }
+        internal List<Type> NavigatableTypes { get; set; }
+
         public RunnerConfiguration (string title = "Command Runner")
         {
             Title = title;

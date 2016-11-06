@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace CommandRunner.Terminal {
     internal sealed class TerminalState : State {
         internal List<ICommand> Menu { get; private set; }
-        internal ICommand ParentCommand { get; set; }
         internal Func<Type, object> CommandActivator { get; private set; }
-        private Dictionary<Type, object> ActivatedTypes { get; set; } = new Dictionary<Type, object>();
+        internal Dictionary<Type, ParentCommand> ParentHierarchy { get; } = new Dictionary<Type, ParentCommand>();
         public TerminalState (RunnerConfiguration configuration) : base(configuration)
         {
             CommandActivator = StatefullCommandActivator;
@@ -16,14 +16,26 @@ namespace CommandRunner.Terminal {
 
         private object StatefullCommandActivator(Type type)
         {
-            if (ActivatedTypes.ContainsKey(type))
+            if (ParentHierarchy.ContainsKey(type))
             {
-                return ActivatedTypes[type];
+                return ParentHierarchy[type].Instance;
             }
             var instance = Configuration.CommandActivator.Invoke(type);
-            if(Configuration.Menu.Exists(c => c.Type == type && c is NavigatableCommand))
+
+            foreach (var property in type.GetProperties())
             {
-                ActivatedTypes.Add(type, instance);
+                if (ParentHierarchy.ContainsKey(property.PropertyType))
+                {
+                    property.SetValue(instance, ParentHierarchy[property.PropertyType].Instance);
+                }
+            }
+
+            if(Configuration.NavigatableTypes.Exists(c => c == type))
+            {
+                ParentHierarchy.Add(type, new ParentCommand
+                {
+                    Instance = instance
+                });
             }
             return instance;
         }
@@ -31,8 +43,34 @@ namespace CommandRunner.Terminal {
         public void SetMenu(List<ICommand> newMenu, ICommand parentCommand = null)
         {
             Menu = newMenu;
-            ParentCommand = parentCommand;
+            var command = parentCommand as NavigatableCommand;
+            if (command != null && ParentHierarchy.ContainsKey(parentCommand.Type))
+            {
+                ParentHierarchy[parentCommand.Type].Command = command;
+            }
         }
+
+        public void MoveUp()
+        {
+            if (!ParentHierarchy.Any()) return;
+            var previous = ParentHierarchy.Last();
+            ParentHierarchy.Remove(previous.Key);
+            if (ParentHierarchy.Any())
+            {
+                Menu = ParentHierarchy.Last().Value.Command.SubItems;
+            }
+            else
+            {
+                Menu = Configuration.Menu;
+
+            }
+        }
+    }
+
+    public class ParentCommand
+    {
+        public object Instance { get; set; }
+        public NavigatableCommand Command { get; set; }
     }
 }
 

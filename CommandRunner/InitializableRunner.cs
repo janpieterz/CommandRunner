@@ -94,7 +94,7 @@ namespace CommandRunner {
                 }
             }
 
-
+            _configuration.NavigatableTypes = navigatableTypes;
             _configuration.Menu = commands;
             //GET ALL nested/navigatable
             //PROCESS these
