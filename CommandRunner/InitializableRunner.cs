@@ -40,7 +40,7 @@ namespace CommandRunner {
                 var typeInfo = x.GetTypeInfo();
                 return typeInfo.GetCustomAttribute<NestedCommandAttribute>() != null;
             });
-            List<IWritableMenuItem> commands = new List<IWritableMenuItem>();
+            List<ICommand> commands = new List<ICommand>();
             foreach (var nestedCommand in nestedCommands)
             {
                 var nestedAttribute = nestedCommand.GetTypeInfo().GetCustomAttribute<NestedCommandAttribute>();
@@ -50,11 +50,13 @@ namespace CommandRunner {
                     var methodAttribute = methodInfo.GetCustomAttribute<CommandAttribute>();
                     var parameters = methodInfo.GetParameters();
                     
-                    var command = new Command()
+                    var command = new SingleCommand()
                     {
                         Identifier = $"{nestedAttribute.Identifier.Trim().ToLowerInvariant()} {methodAttribute.Identifier.Trim().ToLowerInvariant()}",
                         Help = methodAttribute.Help,
-                        Parameters = parameters.ToList()
+                        Parameters = parameters.ToList(),
+                        MethodInfo = methodInfo,
+                        Type = nestedCommand
                     };
                     commands.Add(command);
                 }
@@ -81,11 +83,13 @@ namespace CommandRunner {
                 foreach (MethodInfo methodInfo in methods)
                 {
                     var methodAttribute = methodInfo.GetCustomAttribute<CommandAttribute>();
-                    commands.Add(new Command()
+                    commands.Add(new SingleCommand()
                     {
                         Identifier = methodAttribute.Identifier.Trim().ToLowerInvariant(),
                         Help = methodAttribute.Help,
-                        Parameters = methodInfo.GetParameters().ToList()
+                        Parameters = methodInfo.GetParameters().ToList(),
+                        Type = type,
+                        MethodInfo = methodInfo
                     });
                 }
             }
@@ -130,7 +134,7 @@ namespace CommandRunner {
                     $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
             }
             var initializeMethod = initializeMethods.Single();
-            var subItems = new List<IWritableMenuItem>();
+            var subItems = new List<ICommand>();
 
             var commandMethods =
                 navigatableCommand.GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
@@ -139,11 +143,13 @@ namespace CommandRunner {
                 var methodAttribute = commandMethod.GetCustomAttribute<CommandAttribute>();
                 var parameters = commandMethod.GetParameters();
 
-                var command = new Command()
+                var command = new SingleCommand()
                 {
                     Identifier = methodAttribute.Identifier.Trim().ToLowerInvariant(),
                     Help = methodAttribute.Help,
-                    Parameters = parameters.ToList()
+                    Parameters = parameters.ToList(),
+                    Type = navigatableCommand,
+                    MethodInfo = commandMethod
                 };
                 subItems.Add(command);
             }
@@ -160,18 +166,22 @@ namespace CommandRunner {
                 Identifier = navigatableAttribute.Identifier.Trim().ToLowerInvariant(),
                 Help = navigatableAttribute.Help,
                 Parameters = initializeMethod.GetParameters().ToList(),
-                SubItems = subItems
+                SubItems = subItems,
+                Type = navigatableCommand,
+                MethodInfo = initializeMethod
             };
         }
     }
 
-    public interface IWritableMenuItem
+    public interface ICommand
     {
+        MethodInfo MethodInfo { get; }
         List<ParameterInfo> Parameters { get; }
         string Identifier { get; }
         void WriteToConsole();
         MatchState Match(List<string> arguments);
         List<string> ArgumentsWithoutIdentifier(List<string> arguments);
+        Type Type { get; }
 
     }
 }

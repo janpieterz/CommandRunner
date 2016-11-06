@@ -40,10 +40,25 @@ namespace CommandRunner
             for (var i = 0; i < (encounteredIList ? parameters.Length - 1 : parameters.Length); i++)
             {
                 var parameter = parameters[i];
+                if (parameter == null) continue;
                 if (parameter.ParameterType.IsIList())
                 {
                     throw new Exception("Only the last parameter can be an IEnumerable.");
                 }
+                if (arguments.Count < i + 1)
+                {
+                    if (parameter.IsOptional)
+                    {
+                        typedParameters.Add(Type.Missing);
+                    }
+                    else if (parameter.ParameterType.GetTypeInfo().IsGenericType &&
+                             parameter.ParameterType.GetTypeInfo().GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        typedParameters.Add(null);
+                    }
+                    continue;
+                }
+                
                 var argument = arguments[i];
                 typedParameters.Add(CreateTypedParameter(parameter.ParameterType, argument));
             }
@@ -113,14 +128,21 @@ namespace CommandRunner
             {
                 return bool.Parse(value);
             }
-            else if (type.GetTypeInfo().IsEnum)
+            if (type.GetTypeInfo().IsEnum)
             {
                 return Enum.Parse(type, value, true);
             }
-            else
+            if (type.GetTypeInfo().IsGenericType && type.GetTypeInfo().GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+                var nulledType = type.GetGenericArguments().FirstOrDefault();
+                if (nulledType == null)
+                {
+                    throw new Exception($"Cannot process nullably type without a generic argument. Type: {type.Name}");
+                }
+                var result = CreateTypedParameter(nulledType, value);
+                return result;
             }
+            return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
         }
 
         private static bool IsPrimitiveType(Type type)

@@ -27,7 +27,7 @@ namespace CommandRunner.Terminal
                 if (menuItems.Any())
                 {
                     Console.WriteLine("Menu's available (type help x to print sub items):");
-                    foreach (IWritableMenuItem command in _configuration.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier))
+                    foreach (ICommand command in _configuration.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier))
                     {
                         Console.Write("  ");
                         command.WriteToConsole();
@@ -35,12 +35,12 @@ namespace CommandRunner.Terminal
                     Console.WriteLine();
                 }
 
-                var commands = _configuration.Menu.OfType<Command>().OrderBy(x => x.Identifier);
+                var commands = _configuration.Menu.OfType<SingleCommand>().OrderBy(x => x.Identifier);
 
                 if (commands.Any())
                 {
                     Console.WriteLine("Commands: ");
-                    foreach (IWritableMenuItem command in commands)
+                    foreach (ICommand command in commands)
                     {
                         Console.Write("  ");
                         command.WriteToConsole();
@@ -89,7 +89,7 @@ namespace CommandRunner.Terminal
                     ConsoleWrite.WriteErrorLine("Please provide a valid command.");
                     continue;
                 }
-                foreach (KeyValuePair<IWritableMenuItem, MatchState> match in matches)
+                foreach (KeyValuePair<ICommand, MatchState> match in matches)
                 {
                     if (match.Value == MatchState.MissingParameter)
                     {
@@ -101,15 +101,13 @@ namespace CommandRunner.Terminal
                         ConsoleWrite.WriteErrorLine("Looks like you provided too much parameters for your command:");
                         match.Key.WriteToConsole();
                     }
-                    else if (match.Value == MatchState.Matched)
-                    {
-                        ExecuteCommand(match.Key, arguments);
-
-                        Console.WriteLine("MATCHED!");
-                    }
                     else if (match.Value == MatchState.WrongTypes)
                     {
                         ConsoleWrite.WriteErrorLine("The provided types did not match the method parameters!");
+                    }
+                    else if (match.Value == MatchState.Matched)
+                    {
+                        ExecuteCommand(match.Key, arguments);
                     }
                 }
 
@@ -118,20 +116,35 @@ namespace CommandRunner.Terminal
             
             Console.ReadLine();
         }
-
-        private void ExecuteCommand(IWritableMenuItem menuItem, List<string> arguments )
+        
+        private void ExecuteCommand(ICommand command, List<string> arguments )
         {
             try
             {
-                var typedParameters =
-                    TypedParameterExecution.CreateTypedParameters(menuItem.Parameters.ToArray(),
-                        menuItem.ArgumentsWithoutIdentifier(arguments));
+                var commandInstance = _configuration.CommandActivator.Invoke(command.Type);
+                Console.ForegroundColor = _configuration.CommandColor;
+                if (command.Parameters.Count > 0)
+                {
+                    var typedParameters =
+                        TypedParameterExecution.CreateTypedParameters(command.Parameters.ToArray(),
+                            command.ArgumentsWithoutIdentifier(arguments));
+                    
+                    command.MethodInfo.Invoke(commandInstance, typedParameters);
 
+                }
+                else
+                {
+                    command.MethodInfo.Invoke(commandInstance, null);
+                }
 
             }
             catch (Exception exception)
             {
                 ConsoleWrite.WriteErrorLine($"We couldn't setup your command parameters. Exception: {exception.Message}");
+            }
+            finally
+            {
+                Console.ForegroundColor = _configuration.TerminalColor;
             }
         }
 

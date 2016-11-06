@@ -6,11 +6,12 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public class MatchableCommand
+    public class CommandBase
     {
+        public string Help { get; set; }
         public int MinimumParameters { get; set; }
         private List<ParameterInfo> _parameters;
-
+        public MethodInfo MethodInfo { get; set; }
         public List<ParameterInfo> Parameters
         {
             get { return _parameters; }
@@ -22,7 +23,7 @@ namespace CommandRunner
                 {
                     if (!parameterInfo.IsOptional &&
                         !(parameterInfo.ParameterType.GetTypeInfo().IsGenericType &&
-                         parameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>)))
+                         parameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>)) && !parameterInfo.ParameterType.IsIList())
                     {
                         minimumParameters++;
                     }
@@ -69,7 +70,7 @@ namespace CommandRunner
         {
             return Identifier;
         }
-
+        public Type Type { get; set; }
     }
     public enum MatchState
     {

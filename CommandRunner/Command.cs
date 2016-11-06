@@ -5,14 +5,8 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public class Command : MatchableCommand, IWritableMenuItem
+    public class SingleCommand : CommandBase, ICommand
     {
-        public string Help { get; set; }
-        public override string ToString()
-        {
-            return Identifier;
-        }
-
         public void WriteToConsole()
         {
             Console.Write(Identifier);
@@ -35,6 +29,6 @@ namespace CommandRunner
                 Console.Write($" - {Help}");
             }
             Console.Write(Environment.NewLine);
-        }
+        }       
     }
 }

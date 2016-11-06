@@ -5,11 +5,9 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public class NavigatableCommand : MatchableCommand, IWritableMenuItem
+    public class NavigatableCommand : CommandBase, ICommand
     {
-        public string Help { get; set; }
-        public List<IWritableMenuItem> SubItems { get; set; }
-        public Type Type { get; set; }
+        public List<ICommand> SubItems { get; set; }
         public void WriteToConsole()
         {
             Console.Write(Identifier);
