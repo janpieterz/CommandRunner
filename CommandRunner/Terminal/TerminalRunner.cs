@@ -6,10 +6,11 @@ namespace CommandRunner.Terminal
 {
     public class TerminalRunner : IStartableRunner {
         private readonly RunnerConfiguration _configuration;
-
+        private TerminalState _state;
         public TerminalRunner (RunnerConfiguration configuration)
         {
             _configuration = configuration;
+            _state = new TerminalState(_configuration);
             Console.Title = configuration.Title;
         }
         public void Start()
@@ -23,11 +24,11 @@ namespace CommandRunner.Terminal
                     Console.Write("-");
                 }
 
-                var menuItems = _configuration.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier);
+                var menuItems = _state.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier);
                 if (menuItems.Any())
                 {
                     Console.WriteLine("Menu's available (type help x to print sub items):");
-                    foreach (ICommand command in _configuration.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier))
+                    foreach (ICommand command in _state.Menu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier))
                     {
                         Console.Write("  ");
                         command.WriteToConsole();
@@ -35,7 +36,7 @@ namespace CommandRunner.Terminal
                     Console.WriteLine();
                 }
 
-                var commands = _configuration.Menu.OfType<SingleCommand>().OrderBy(x => x.Identifier);
+                var commands = _state.Menu.OfType<SingleCommand>().OrderBy(x => x.Identifier);
 
                 if (commands.Any())
                 {
@@ -81,7 +82,7 @@ namespace CommandRunner.Terminal
                 }
 
                 var matches =
-                    _configuration.Menu.Select(x => new {Key = x, Value = x.Match(arguments)})
+                    _state.Menu.Select(x => new {Key = x, Value = x.Match(arguments)})
                         .Where(x => x.Value != MatchState.Miss)
                         .ToDictionary(pair => pair.Key, pair => pair.Value);
                 if (!matches.Any())
@@ -121,7 +122,7 @@ namespace CommandRunner.Terminal
         {
             try
             {
-                var commandInstance = _configuration.CommandActivator.Invoke(command.Type);
+                var commandInstance = _state.CommandActivator.Invoke(command.Type);
                 Console.ForegroundColor = _configuration.CommandColor;
                 if (command.Parameters.Count > 0)
                 {
@@ -136,7 +137,11 @@ namespace CommandRunner.Terminal
                 {
                     command.MethodInfo.Invoke(commandInstance, null);
                 }
-
+                var navigatableCommand = command as NavigatableCommand;
+                if (navigatableCommand != null)
+                {
+                    _state.SetMenu(navigatableCommand.SubItems, navigatableCommand);
+                }
             }
             catch (Exception exception)
             {
@@ -147,48 +152,6 @@ namespace CommandRunner.Terminal
                 Console.ForegroundColor = _configuration.TerminalColor;
             }
         }
-
-
-        // private void RunTerminalMode()
-        // {
-        //     var menuItemList = _settings.Menu;
-        //     if (!menuItemList.Any())
-        //     {
-        //         WriteErrorMessage("Please add commands to add functionality.");
-        //         return;
-        //     }
-        //     string input;
-        //     do
-        //     {
-        //         Console.WriteLine($"Available commands:");
-
-        //         menuItemList = menuItemList.OrderBy(x => x.Title).ToList();
-        //         menuItemList.ForEach(OutputMenuItem);
-
-        //         Console.Write($"{Environment.NewLine}Command> ");
-        //         input = Console.ReadLine() ?? string.Empty;
-        //         SetupConsoleErrorColor();
-        //         // var commandWithArgs = InputParser.FindCommand(menuItemList, InputParser.ParseInputToArguments(input));
-        //         SetupConsoleRunnerColor();
-                // if (commandWithArgs.Item1 != null)
-                // {
-                //     try
-                //     {
-                //         SetupConsoleCommandColor();
-                //         commandWithArgs.Item1.Execute(commandWithArgs.Item2.ToList());
-                //     }
-                //     catch (Exception exception)
-                //     {
-                //         WriteErrorMessage(exception.Message);
-                //     }
-                //     finally
-                //     {
-                //         SetupConsoleRunnerColor();
-                //     }
-                //     Console.WriteLine();
-                // }
-        //     } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
-        // }
     }
 
     public static class ConsoleWrite
