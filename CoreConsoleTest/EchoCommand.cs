@@ -102,7 +102,7 @@ namespace CommandRunner.CoreConsoleTest
         [NavigatableCommandAnnouncement]
         public void Announce()
         {
-            Console.WriteLine("Account menu {0}", AccountId);
+            Console.WriteLine("Account menu for account {0}", AccountId);
         }
 
         [Command("show contacts")]
@@ -126,6 +126,12 @@ namespace CommandRunner.CoreConsoleTest
             ClientId = clientId;
         }
 
+        [NavigatableCommandAnnouncement]
+        public void Announce()
+        {
+            Console.WriteLine("Client menu for account {0}", ClientId);
+        }
+
         [Command("show users")]
         public void ShowUsers()
         {
@@ -141,6 +147,7 @@ namespace CommandRunner.CoreConsoleTest
     [NavigatableCommand("servicebus")]
     public class ServiceBusMenu
     {
+        [Command("show queues")]
         public void ShowQueues()
         {
             Console.WriteLine("Showing queues.");

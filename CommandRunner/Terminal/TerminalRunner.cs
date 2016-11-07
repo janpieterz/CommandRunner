@@ -103,12 +103,24 @@ namespace CommandRunner.Terminal
         private void PrintMenu()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            string menuIdentifier = "Main";
             if (_state.ParentHierarchy.Any())
             {
-                menuIdentifier = _state.ParentHierarchy.Last().Value.Command.Identifier;
+                var currentMenuItem = _state.ParentHierarchy.Last();
+                if (currentMenuItem.Value.Command.AnnounceMethod != null)
+                {
+                    var instance = _state.CommandActivator.Invoke(currentMenuItem.Key);
+                    currentMenuItem.Value.Command.AnnounceMethod.Invoke(instance, new object[0]);
+                }
+                else
+                {
+                    Console.WriteLine($"{_state.ParentHierarchy.Last().Value.Command.Identifier} menu:");
+                }
             }
-            Console.WriteLine($"{menuIdentifier} menu:");
+            else
+            {
+                Console.WriteLine("Main menu:");
+            }
+            
             Console.ForegroundColor = _configuration.TerminalColor;
 
             if (_state.NavigatableMenu.Any())
@@ -167,25 +179,31 @@ namespace CommandRunner.Terminal
             {
                 var commandInstance = _state.CommandActivator.Invoke(command.Type);
                 Console.ForegroundColor = _configuration.CommandColor;
+                var navigatableCommand = command as NavigatableCommand;
                 if (command.Parameters.Count > 0)
                 {
                     var typedParameters =
                         TypedParameterExecution.CreateTypedParameters(command.Parameters.ToArray(),
                             command.ArgumentsWithoutIdentifier(arguments));
-                    
                     command.MethodInfo.Invoke(commandInstance, typedParameters);
 
                 }
-                var navigatableCommand = command as NavigatableCommand;
-                if (navigatableCommand != null)
-                {
-                    //Navigation commands don't always have an initialize method
-                    navigatableCommand.MethodInfo?.Invoke(commandInstance, null);
-                    _state.SetMenu(navigatableCommand.SubItems, navigatableCommand);
-                }
                 else
                 {
-                    command.MethodInfo.Invoke(commandInstance, null);
+                    //Navigation commands don't always have an initialize method
+                    if (navigatableCommand != null)
+                    {
+                        navigatableCommand.MethodInfo?.Invoke(commandInstance, null);
+                    }
+                    else
+                    {
+                        command.MethodInfo.Invoke(commandInstance, null);
+                    }
+                }
+                
+                if (navigatableCommand != null)
+                {
+                    _state.SetMenu(navigatableCommand.SubItems, navigatableCommand);
                 }
             }
             catch (Exception exception)

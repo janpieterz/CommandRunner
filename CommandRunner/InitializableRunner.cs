@@ -120,15 +120,7 @@ namespace CommandRunner {
         public NavigatableCommand ProcessNavigatableCommand(Type navigatableCommand, NavigatableCommandAttribute navigatableAttribute, List<Type> scannedTypes)
         {
             scannedTypes.Add(navigatableCommand);
-            var initializeMethods =
-                navigatableCommand.GetMethods()
-                    .Where(x => x.GetCustomAttribute<NavigatableCommandInitialisationAttribute>() != null).ToList();
-            if (initializeMethods.Count > 1)
-            {
-                throw new Exception(
-                    $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
-            }
-            var initializeMethod = initializeMethods.SingleOrDefault();
+            
             var subItems = new List<ICommand>();
 
             var commandMethods =
@@ -151,11 +143,34 @@ namespace CommandRunner {
             var navigatableSubCommands =
                 navigatableCommand.GetProperties()
                     .Where(x => x.GetCustomAttribute<NavigatableCommandAttribute>() != null);
+
             foreach (PropertyInfo navigatableSubCommand in navigatableSubCommands)
             {
                 scannedTypes.Add(navigatableSubCommand.PropertyType);
                 subItems.Add(ProcessNavigatableCommand(navigatableSubCommand.PropertyType, navigatableSubCommand.GetCustomAttribute<NavigatableCommandAttribute>(), scannedTypes));
             }
+
+            var navigatableCommandMethods = navigatableCommand.GetMethods();
+            var initializeMethods =
+                navigatableCommandMethods
+                    .Where(x => x.GetCustomAttribute<NavigatableCommandInitialisationAttribute>() != null).ToList();
+
+            var announceMethods =
+                navigatableCommandMethods.Where(
+                    x => x.GetCustomAttribute<NavigatableCommandAnnouncementAttribute>() != null).ToList();
+
+            if (initializeMethods.Count > 1)
+            {
+                throw new Exception(
+                    $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
+            }
+            if (announceMethods.Count > 1)
+            {
+                throw new Exception(
+                    $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandAnnouncementAttribute)}");
+            }
+            var initializeMethod = initializeMethods.SingleOrDefault();
+            var announceMethod = announceMethods.SingleOrDefault();
             return new NavigatableCommand
             {
                 Identifier = navigatableAttribute.Identifier.Trim().ToLowerInvariant(),
@@ -163,7 +178,8 @@ namespace CommandRunner {
                 Parameters = initializeMethod?.GetParameters().ToList(),
                 SubItems = subItems,
                 Type = navigatableCommand,
-                MethodInfo = initializeMethod
+                MethodInfo = initializeMethod,
+                AnnounceMethod = announceMethod
             };
         }
     }

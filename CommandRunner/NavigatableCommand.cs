@@ -8,6 +8,7 @@ namespace CommandRunner
     public class NavigatableCommand : CommandBase, ICommand
     {
         public List<ICommand> SubItems { get; set; }
+        public MethodInfo AnnounceMethod { get; set; }
         public void WriteToConsole()
         {
             Console.Write(Identifier);
