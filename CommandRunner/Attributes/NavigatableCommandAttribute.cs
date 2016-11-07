@@ -14,9 +14,4 @@ namespace CommandRunner
             Help = help;
         }
     }
-
-    [AttributeUsage(AttributeTargets.Method)]
-    public sealed class NavigatableCommandInitialisationAttribute : Attribute
-    {
-    }
 }

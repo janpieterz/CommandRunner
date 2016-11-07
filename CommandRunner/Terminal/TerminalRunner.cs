@@ -176,14 +176,16 @@ namespace CommandRunner.Terminal
                     command.MethodInfo.Invoke(commandInstance, typedParameters);
 
                 }
-                else
-                {
-                    command.MethodInfo.Invoke(commandInstance, null);
-                }
                 var navigatableCommand = command as NavigatableCommand;
                 if (navigatableCommand != null)
                 {
+                    //Navigation commands don't always have an initialize method
+                    navigatableCommand.MethodInfo?.Invoke(commandInstance, null);
                     _state.SetMenu(navigatableCommand.SubItems, navigatableCommand);
+                }
+                else
+                {
+                    command.MethodInfo.Invoke(commandInstance, null);
                 }
             }
             catch (Exception exception)

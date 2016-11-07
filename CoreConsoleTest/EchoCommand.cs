@@ -99,6 +99,12 @@ namespace CommandRunner.CoreConsoleTest
             AccountId = accountId;
         }
 
+        [NavigatableCommandAnnouncement]
+        public void Announce()
+        {
+            Console.WriteLine("Account menu {0}", AccountId);
+        }
+
         [Command("show contacts")]
         public void ShowContacts()
         {
@@ -130,6 +136,14 @@ namespace CommandRunner.CoreConsoleTest
         public void SetLocation(string location)
         {
             Console.WriteLine("Setting location: {0}", location);
+        }
+    }
+    [NavigatableCommand("servicebus")]
+    public class ServiceBusMenu
+    {
+        public void ShowQueues()
+        {
+            Console.WriteLine("Showing queues.");
         }
     }
 }

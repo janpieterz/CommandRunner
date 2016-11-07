@@ -123,17 +123,12 @@ namespace CommandRunner {
             var initializeMethods =
                 navigatableCommand.GetMethods()
                     .Where(x => x.GetCustomAttribute<NavigatableCommandInitialisationAttribute>() != null).ToList();
-            if (initializeMethods.Count == 0)
-            {
-                throw new Exception(
-                    $"{navigatableCommand.Name} does not have a method with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
-            }
             if (initializeMethods.Count > 1)
             {
                 throw new Exception(
                     $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
             }
-            var initializeMethod = initializeMethods.Single();
+            var initializeMethod = initializeMethods.SingleOrDefault();
             var subItems = new List<ICommand>();
 
             var commandMethods =
@@ -165,7 +160,7 @@ namespace CommandRunner {
             {
                 Identifier = navigatableAttribute.Identifier.Trim().ToLowerInvariant(),
                 Help = navigatableAttribute.Help,
-                Parameters = initializeMethod.GetParameters().ToList(),
+                Parameters = initializeMethod?.GetParameters().ToList(),
                 SubItems = subItems,
                 Type = navigatableCommand,
                 MethodInfo = initializeMethod

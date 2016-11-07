@@ -17,7 +17,7 @@ namespace CommandRunner
             get { return _parameters; }
             set
             {
-                _parameters = value;
+                _parameters = value ?? new List<ParameterInfo>();
                 int minimumParameters = 0;
                 foreach (ParameterInfo parameterInfo in Parameters)
                 {
