@@ -4,21 +4,19 @@ using System.Linq;
 
 namespace CommandRunner.Terminal
 {
-    public class TerminalRunner : IStartableRunner {
-        private readonly RunnerConfiguration _configuration;
+    internal class TerminalRunner : IStartableRunner {
         private readonly TerminalState _state;
-        public TerminalRunner (RunnerConfiguration configuration)
+        internal TerminalRunner (State state)
         {
-            _configuration = configuration;
-            _state = new TerminalState(_configuration);
-            Console.Title = configuration.Title;
+            _state = (TerminalState) state;
+            Console.Title = _state.Title;
         }
         public void Start()
         {
             string input;
             do
             {
-                Console.ForegroundColor = _configuration.TerminalColor;
+                Console.ForegroundColor = _state.TerminalColor;
                 PrintLine();
                 PrintMenu();
                 input = QueryForcommand();
@@ -27,7 +25,7 @@ namespace CommandRunner.Terminal
                 Console.WriteLine();
                 if (!arguments.Any())
                 {
-                    ConsoleWrite.WriteErrorLine("Please provide an argument");
+                    ConsoleWrite.WriteErrorLine(ErrorMessages.NoArgumentsProvided);
                     continue;
                 }
                 if (arguments[0] == "help")
@@ -96,7 +94,7 @@ namespace CommandRunner.Terminal
         private string QueryForcommand()
         {
             Console.Write($"{Environment.NewLine}Command> ");
-            Console.ForegroundColor = _configuration.CommandColor;
+            Console.ForegroundColor = _state.CommandColor;
             return Console.ReadLine() ?? string.Empty;
         }
 
@@ -108,7 +106,7 @@ namespace CommandRunner.Terminal
                 var currentMenuItem = _state.ParentHierarchy.Last();
                 if (currentMenuItem.Value.Command.AnnounceMethod != null)
                 {
-                    var instance = _state.CommandActivator.Invoke(currentMenuItem.Key);
+                    var instance = _state.StatefullCommandActivator(currentMenuItem.Key);
                     currentMenuItem.Value.Command.AnnounceMethod.Invoke(instance, new object[0]);
                 }
                 else
@@ -121,7 +119,7 @@ namespace CommandRunner.Terminal
                 Console.WriteLine("Main menu:");
             }
             
-            Console.ForegroundColor = _configuration.TerminalColor;
+            Console.ForegroundColor = _state.TerminalColor;
 
             if (_state.NavigatableMenu.Any())
             {
@@ -177,8 +175,8 @@ namespace CommandRunner.Terminal
         {
             try
             {
-                var commandInstance = _state.CommandActivator.Invoke(command.Type);
-                Console.ForegroundColor = _configuration.CommandColor;
+                var commandInstance = _state.StatefullCommandActivator(command.Type);
+                Console.ForegroundColor = _state.CommandColor;
                 var navigatableCommand = command as NavigatableCommand;
                 if (command.Parameters.Count > 0)
                 {
@@ -212,7 +210,7 @@ namespace CommandRunner.Terminal
             }
             finally
             {
-                Console.ForegroundColor = _configuration.TerminalColor;
+                Console.ForegroundColor = _state.TerminalColor;
             }
         }
     }

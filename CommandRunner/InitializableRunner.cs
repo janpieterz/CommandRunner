@@ -8,29 +8,22 @@ using CommandRunner.CommandLine;
 namespace CommandRunner {
     class InitializableRunner {
         readonly RunnerConfiguration _configuration;
+        private List<Type> NavigatableTypes { get; set; }
+        private List<ICommand> Menu { get; set; }
+        private List<string> Arguments { get; set; }
+        private RunModes Mode { get; set; }
         public InitializableRunner(RunnerConfiguration configuration) {
             _configuration = configuration;
         }
 
         public IStartableRunner Initialize() {
             ScanTypes();
-            
+            SetArguments();
+            SetMode();
+            RemoveRedundantArguments();
             //TODO: Scan for command dupes or commands with help and throw errors
             //TODO: Scan for IEnumerable that are not the last parameter and throw error
             return CreateRunnerForMode();
-        }
-        private void SetMode() {
-            if (!_configuration.RunMode.HasValue) {
-                var args = Environment.GetCommandLineArgs();
-                if (args.Length == 0 || (args.FirstOrDefault() == Assembly.GetEntryAssembly().Location || args.FirstOrDefault().Contains("vshost.exe")))
-                {
-                    _configuration.RunMode = RunModes.Terminal;
-                }
-                else
-                {
-                    _configuration.RunMode = RunModes.CommandLine;
-                }
-            }
         }
 
         private void ScanTypes()
@@ -94,27 +87,9 @@ namespace CommandRunner {
                 }
             }
 
-            _configuration.NavigatableTypes = navigatableTypes;
-            _configuration.Menu = commands;
-            //GET ALL nested/navigatable
-            //PROCESS these
-            //GET ALL COMMANDS WITHOUT A NEST/NAV, ensure no nav property contains any of these
+            NavigatableTypes = navigatableTypes;
+            Menu = commands;
 
-        }
-        private IStartableRunner CreateRunnerForMode()
-        {            
-            SetMode();
-            if(!_configuration.RunMode.HasValue) {
-                throw new Exception("No correct runmode found.");
-            }
-
-            if(_configuration.RunMode.Value == RunModes.Terminal) {
-                return new TerminalRunner(_configuration);
-            }
-            if(_configuration.RunMode.Value == RunModes.CommandLine) {
-                return new CommandLineRunner(_configuration);
-            }
-            throw new Exception("No correct runmode found.");
         }
 
         public NavigatableCommand ProcessNavigatableCommand(Type navigatableCommand, NavigatableCommandAttribute navigatableAttribute, List<Type> scannedTypes)
@@ -182,17 +157,72 @@ namespace CommandRunner {
                 AnnounceMethod = announceMethod
             };
         }
-    }
 
-    public interface ICommand
-    {
-        MethodInfo MethodInfo { get; }
-        List<ParameterInfo> Parameters { get; }
-        string Identifier { get; }
-        void WriteToConsole();
-        MatchState Match(List<string> arguments);
-        List<string> ArgumentsWithoutIdentifier(List<string> arguments);
-        Type Type { get; }
+        private void SetArguments()
+        {
+            var arguments = _configuration.Arguments != null && _configuration.Arguments.Any()
+                ? _configuration.Arguments
+                : Environment.GetCommandLineArgs().ToList();
+            Arguments = arguments;
+        }
 
+        private void SetMode() {
+            if (!_configuration.RunMode.HasValue)
+            {
+                if (Arguments.Count == 0 ||
+                    (Arguments.FirstOrDefault() == Assembly.GetEntryAssembly().Location ||
+                     Arguments.FirstOrDefault().Contains("vshost.exe")))
+                {
+                    Mode = RunModes.Terminal;
+                }
+                else
+                {
+                    Mode = RunModes.CommandLine;
+                }
+            }
+            else
+            {
+                Mode = _configuration.RunMode.Value;
+            }
+        }
+
+        private void RemoveRedundantArguments()
+        {
+            Arguments.Remove(Assembly.GetEntryAssembly().Location);
+            var firstArgument = Arguments.FirstOrDefault();
+            if (!string.IsNullOrEmpty(firstArgument) && firstArgument.Contains("vshost.exe"))
+            {
+                Arguments.Remove(Arguments.FirstOrDefault());
+            }
+        }
+
+
+        private IStartableRunner CreateRunnerForMode()
+        {   
+            if(Mode == RunModes.Terminal) {
+                var state = new TerminalState();
+                SetupState(state);
+                return new TerminalRunner(state);
+            }
+            if(Mode == RunModes.CommandLine) {
+                var state = new CommandLineState();
+                SetupState(state);
+                return new CommandLineRunner(state);
+            }
+            throw new Exception("No correct runmode found.");
+        }
+
+        private void SetupState(State state)
+        {
+            state.Menu = Menu;
+            state.CommandActivator = _configuration.CommandActivator;
+            state.Arguments = Arguments;
+            state.CommandColor = _configuration.CommandColor;
+            state.NavigatableTypes = NavigatableTypes;
+            state.RunMode = Mode;
+            state.TerminalColor = _configuration.TerminalColor;
+            state.Title = _configuration.Title;
+            state.StartupColor = Console.ForegroundColor;
+        }
     }
 }

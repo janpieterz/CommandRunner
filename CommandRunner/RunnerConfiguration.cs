@@ -11,15 +11,15 @@ namespace CommandRunner
         internal ConsoleColor TerminalColor {get; private set;} = ConsoleColor.Green;
         internal ConsoleColor CommandColor { get; private set; } = ConsoleColor.White;
         internal RunModes? RunMode {get; set;}
-        internal List<ICommand> Menu { get; set; }
         internal Func<Type, object> CommandActivator {get; private set;}
         internal List<Type> TypesToScan {get;} = new List<Type>();
         internal List<string> Arguments { get; set; }
-        internal List<Type> NavigatableTypes { get; set; }
 
         public RunnerConfiguration (string title = "Command Runner")
         {
             Title = title;
+            UseReflectionCommandActivator();
+            ScanAllAssemblies();
         }
 
         public void UseTerminalColor(ConsoleColor color) {

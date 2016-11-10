@@ -1,6 +1,6 @@
 using System;
 
-namespace CommandRunner.Terminal
+namespace CommandRunner
 {
     public static class ConsoleWrite
     {
@@ -11,5 +11,10 @@ namespace CommandRunner.Terminal
             Console.WriteLine(message);
             Console.ForegroundColor = previousColor;
         }
+    }
+
+    public static class ErrorMessages
+    {
+        public static string NoArgumentsProvided = "Please provide an argument";
     }
 }

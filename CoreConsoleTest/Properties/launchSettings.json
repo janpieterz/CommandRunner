@@ -2,6 +2,9 @@
   "profiles": {
     "CommandRunnerCoreTest": {
       "commandName": "Project"
+    },
+    "CoreConsoleTest": {
+      "commandName": "Project"
     }
   }
 }
