@@ -29,12 +29,36 @@ namespace CommandRunner {
         {
             ValidateDuplicates(Menu);
             ValidateHelp(Menu);
-            ValidateEnumerable();
+            ValidateEnumerable(Menu);
         }
 
-        private void ValidateEnumerable()
+        private void ValidateEnumerable(List<ICommand> commands)
         {
-            //TODO: Scan for IEnumerable that are not the last parameter and throw error
+            List<string> wrongEnumerableCommands = FindWrongEnumerables(commands);
+            if (wrongEnumerableCommands.Any())
+            {
+                throw new Exception(
+                    string.Format(
+                        "We've found occurances of an enumerable being used at a wrong position. Enumerables can only be used as the last parameter. Commands: [{0}]",
+                        string.Join(",", wrongEnumerableCommands)));
+            }
+        }
+
+        private List<string> FindWrongEnumerables(List<ICommand> commands)
+        {
+            List<string> items = new List<string>();
+            var wrongEnumerables =
+                commands.Where(
+                    x =>
+                        x.Parameters.Take(x.Parameters.Count - 1)
+                            .Any(parameter => parameter.ParameterType.IsEnumerable()));
+            items.AddRange(wrongEnumerables.Select(x => $"{x.Type.Name}:{x.Identifier}"));
+
+            foreach (NavigatableCommand navigatableCommand in commands.OfType<NavigatableCommand>())
+            {
+                items.AddRange(FindWrongEnumerables(navigatableCommand.SubItems));
+            }
+            return items;
         }
 
         private void ValidateHelp(List<ICommand> commands)

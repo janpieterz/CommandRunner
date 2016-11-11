@@ -101,5 +101,19 @@ namespace CommandRunner
             }
             return null;
         }
+
+        public static bool IsEnumerable(this Type type)
+        {
+            if (type == typeof(string)) return false;
+            foreach (Type @interface in type.GetInterfaces())
+            {
+                if (@interface.GetTypeInfo().IsGenericType
+                    && @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

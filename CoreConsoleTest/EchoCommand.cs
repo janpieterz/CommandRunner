@@ -25,6 +25,7 @@ namespace CommandRunner.CoreConsoleTest
                 }
             }
         }
+
     }
     [NestedCommand("nesting")]
     public class Nester
