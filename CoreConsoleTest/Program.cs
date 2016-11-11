@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using Autofac;
-using CommandRunner;
+
 namespace CommandRunner.CoreConsoleTest
 {
     public class Program
@@ -11,7 +8,7 @@ namespace CommandRunner.CoreConsoleTest
         public static void Main(string[] args)
         {
             RunnerConfiguration configuration = new RunnerConfiguration("Testing config");
-            configuration.ForceCommandLine();
+            //configuration.ForceCommandLine();
             //configuration.ScanAllAssemblies();
             //configuration.UseReflectionCommandActivator();
             //configuration.ForceTerminal();

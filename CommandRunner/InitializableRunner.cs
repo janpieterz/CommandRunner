@@ -21,9 +21,46 @@ namespace CommandRunner {
             SetArguments();
             SetMode();
             RemoveRedundantArguments();
-            //TODO: Scan for command dupes or commands with help and throw errors
-            //TODO: Scan for IEnumerable that are not the last parameter and throw error
+            ValidateSettings();
             return CreateRunnerForMode();
+        }
+
+        private void ValidateSettings()
+        {
+            ValidateDuplicates(Menu);
+            ValidateHelp();
+            ValidateEnumerable();
+        }
+
+        private void ValidateEnumerable()
+        {
+            //TODO: Scan for IEnumerable that are not the last parameter and throw error
+        }
+
+        private void ValidateHelp()
+        {
+            //TODO: Scan for commands with help and throw errors
+        }
+        private void ValidateDuplicates(List<ICommand> commands)
+        {
+            List<string> dupes = FindDuplicates(commands);
+            if (dupes.Any())
+            {
+                throw new Exception(string.Format("You have duplicate commands. Commands: [{0}]", string.Join(",", dupes)));
+            }
+        }
+
+        private List<string> FindDuplicates(List<ICommand> commands)
+        {
+            List<string> items = new List<string>();
+            var firstLevelDuplicates = commands.GroupBy(x => x.Identifier).Where(x => x.Count() > 1).ToList();
+            items.AddRange(firstLevelDuplicates.Select(x => x.Key));
+            
+            foreach (NavigatableCommand navigatableCommand in commands.OfType<NavigatableCommand>())
+            {
+                items.AddRange(FindDuplicates(navigatableCommand.SubItems));
+            }
+            return items;
         }
 
         private void ScanTypes()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace CommandRunner.CoreConsoleTest
 {
@@ -86,6 +87,20 @@ namespace CommandRunner.CoreConsoleTest
         public void Numbers(int count = 0, int items = 5)
         {
             Console.WriteLine("A count of '{0}' and '{1}' items", count, items);
+        }
+    }
+    [NavigatableCommand("account")]
+    public class DupedAccountMenu
+    {
+        
+    }
+    [NavigatableCommand("random")]
+    public class RandomMenu
+    {
+        [Command("number")]
+        public void RandomNumber()
+        {
+            
         }
     }
 
