@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 
 namespace CommandRunner
 {
@@ -13,21 +14,12 @@ namespace CommandRunner
             catch (Exception exception)
             {
                 ConsoleWrite.WriteErrorLine(exception.Message);
-                throw;
             }
         }
         public static IStartableRunner Create(RunnerConfiguration configuration) {
-            try
-            {
-                InitializableRunner runner = new InitializableRunner(configuration);
-                var startableRunner = runner.Initialize();
-                return startableRunner;
-            }
-            catch (Exception exception)
-            {
-                ConsoleWrite.WriteErrorLine(exception.Message);
-                throw;
-            }
+            InitializableRunner runner = new InitializableRunner(configuration);
+            var startableRunner = runner.Initialize();
+            return startableRunner;
         }
     }
 }

@@ -89,11 +89,6 @@ namespace CommandRunner.CoreConsoleTest
             Console.WriteLine("A count of '{0}' and '{1}' items", count, items);
         }
     }
-    [NavigatableCommand("account")]
-    public class DupedAccountMenu
-    {
-        
-    }
     [NavigatableCommand("random")]
     public class RandomMenu
     {

@@ -28,7 +28,7 @@ namespace CommandRunner {
         private void ValidateSettings()
         {
             ValidateDuplicates(Menu);
-            ValidateHelp();
+            ValidateHelp(Menu);
             ValidateEnumerable();
         }
 
@@ -37,10 +37,30 @@ namespace CommandRunner {
             //TODO: Scan for IEnumerable that are not the last parameter and throw error
         }
 
-        private void ValidateHelp()
+        private void ValidateHelp(List<ICommand> commands)
         {
-            //TODO: Scan for commands with help and throw errors
+            List<string> helpCommands = FindHelpCommands(commands);
+            if (helpCommands.Any())
+            {
+                throw new Exception(string.Format("You have commands that start the prohibited `help` keywords (`help`, `/?`, `-h`). Commands: [{0}]", string.Join(",", helpCommands)));
+            }
         }
+
+        private List<string> FindHelpCommands(List<ICommand> commands)
+        {
+            List<string> items = new List<string>();
+            var firstLevelHelps =
+                commands.Where(
+                    x => x.Identifier.StartsWith("help") || x.Identifier.StartsWith("/?") || x.Identifier.StartsWith("-h"));
+            items.AddRange(firstLevelHelps.Select(x => $"{x.Type.Name}:{x.Identifier}"));
+
+            foreach (NavigatableCommand navigatableCommand in commands.OfType<NavigatableCommand>())
+            {
+                items.AddRange(FindHelpCommands(navigatableCommand.SubItems));
+            }
+            return items;
+        }
+
         private void ValidateDuplicates(List<ICommand> commands)
         {
             List<string> dupes = FindDuplicates(commands);
@@ -54,7 +74,13 @@ namespace CommandRunner {
         {
             List<string> items = new List<string>();
             var firstLevelDuplicates = commands.GroupBy(x => x.Identifier).Where(x => x.Count() > 1).ToList();
-            items.AddRange(firstLevelDuplicates.Select(x => x.Key));
+            foreach (IGrouping<string, ICommand> grouping in firstLevelDuplicates)
+            {
+                foreach (ICommand command in grouping)
+                {
+                    items.Add($"{command.Type.Name}:{command.Identifier}");
+                }
+            }
             
             foreach (NavigatableCommand navigatableCommand in commands.OfType<NavigatableCommand>())
             {

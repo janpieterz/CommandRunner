@@ -16,11 +16,5 @@ namespace CommandRunner.CoreConsoleTest
         {
             Console.WriteLine("Hi");
         }
-
-        [Command("hi", "Say hello hi double dupe")]
-        public void SayHiAgain()
-        {
-            Console.WriteLine(":O");
-        }
     }
 }
