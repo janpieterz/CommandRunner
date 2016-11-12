@@ -51,8 +51,7 @@ namespace CommandRunner
                     {
                         typedParameters.Add(Type.Missing);
                     }
-                    else if (parameter.ParameterType.GetTypeInfo().IsGenericType &&
-                             parameter.ParameterType.GetTypeInfo().GetGenericTypeDefinition() == typeof(Nullable<>))
+                    else if (parameter.ParameterType.IsNullable())
                     {
                         typedParameters.Add(null);
                     }
@@ -62,6 +61,7 @@ namespace CommandRunner
                 var argument = arguments[i];
                 typedParameters.Add(CreateTypedParameter(parameter.ParameterType, argument));
             }
+
             if (encounteredIList)
             {
                 var parameter = parameters[parameters.Length - 1];
@@ -86,14 +86,7 @@ namespace CommandRunner
 
         private static object CreateTypedParameter(Type type, string argument)
         {
-            if (IsPrimitiveType(type))
-            {
-                return ChangeType(type, argument);
-            }
-            else
-            {
-                return MakeType(type, argument);
-            }
+            return IsPrimitiveType(type) ? ChangeType(type, argument) : MakeType(type, argument);
         }
 
         private static object MakeType(Type type, string value)
@@ -132,7 +125,7 @@ namespace CommandRunner
             {
                 return Enum.Parse(type, value, true);
             }
-            if (type.GetTypeInfo().IsGenericType && type.GetTypeInfo().GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (type.IsNullable())
             {
                 var nulledType = type.GetGenericArguments().FirstOrDefault();
                 if (nulledType == null)

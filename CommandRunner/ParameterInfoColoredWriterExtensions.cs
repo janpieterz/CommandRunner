@@ -13,30 +13,21 @@ namespace CommandRunner
 
             parameterInfo.ParameterType.SetConsoleColor();
             
-            //TODO: Refactor below if
-            if (parameterInfo.ParameterType.GetTypeInfo().IsGenericType && parameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (parameterInfo.ParameterType.IsNullable())
             {
                 //Process nullable Guid? etc
-                var nulledType = parameterInfo.ParameterType.GetGenericArguments().FirstOrDefault();
-                if (nulledType != null)
+                var nulledType = parameterInfo.ParameterType.GetGenericArguments().Single();
+                if (nulledType.GetTypeInfo().IsValueType && nulledType != typeof(Guid))
                 {
-                    if (nulledType.GetTypeInfo().IsValueType && nulledType != typeof(Guid))
-                    {
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    }
-                    nulledType.WriteTypeName();
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write("?");
+                    Console.ForegroundColor = ConsoleColor.Blue;
                 }
                 else
                 {
-                    //Escape clause, should never be hit
-                    parameterInfo.ParameterType.WriteTypeName();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
                 }
+                nulledType.WriteTypeName();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("?");
             }
             else if (parameterInfo.ParameterType.GetTypeInfo().IsGenericType)
             {

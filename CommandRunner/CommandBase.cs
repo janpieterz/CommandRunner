@@ -23,8 +23,7 @@ namespace CommandRunner
                 foreach (ParameterInfo parameterInfo in Parameters)
                 {
                     if (!parameterInfo.IsOptional &&
-                        !(parameterInfo.ParameterType.GetTypeInfo().IsGenericType &&
-                         parameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>)) && !parameterInfo.ParameterType.IsIList())
+                        !parameterInfo.ParameterType.IsNullable() && !parameterInfo.ParameterType.IsIList())
                     {
                         minimumParameters++;
                     }

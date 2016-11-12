@@ -52,6 +52,15 @@ namespace CommandRunner
             }
         }
 
+        internal static bool IsNullable(this Type type)
+        {
+            if (type.GetTypeInfo().IsGenericType && type.GetTypeInfo().GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return true;
+            }
+            return false;
+        }
+
         internal static void WriteTypeName(this Type type)
         {
             if (type == typeof(string))
