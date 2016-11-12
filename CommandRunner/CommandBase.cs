@@ -53,7 +53,7 @@ namespace CommandRunner
                         !Parameters.LastOrDefault()
                             .ParameterType.IsIList() && Parameters.Count < argumentsWithoutIdentifiers.Count)
                     {
-                        return MatchState.TooManyParameters;
+                        return MatchState.TooManyArguments;
                     }
                     return MatchState.Matched;
                 }

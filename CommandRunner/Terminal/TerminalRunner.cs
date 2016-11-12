@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CommandRunner.Terminal
 {
-    internal class TerminalRunner : IStartableRunner {
+    internal class TerminalRunner : BaseRunner, IStartableRunner {
         private readonly TerminalState _state;
-        internal TerminalRunner (State state)
+        internal TerminalRunner (TerminalState state) : base(state)
         {
-            _state = (TerminalState) state;
+            _state = state;
             Console.Title = _state.Title;
         }
         public void Start()
@@ -17,8 +16,8 @@ namespace CommandRunner.Terminal
             do
             {
                 Console.ForegroundColor = _state.TerminalColor;
-                PrintLine();
-                PrintMenu();
+                Printer.PrintLine();
+                Printer.PrintMenu(_state);
                 input = QueryForcommand();
 
                 var arguments = InputParser.ParseInputToArguments(input).ToList();
@@ -35,8 +34,8 @@ namespace CommandRunner.Terminal
                     if (item != null)
                     {
                         Console.WriteLine("Help for: {0}", item.Identifier);
-                        PrintNavigatableItems(item.SubItems.OfType<NavigatableCommand>().ToList());
-                        PrintSingleCommands(item.SubItems.OfType<SingleCommand>().ToList());
+                        Printer.PrintNavigatableItems(item.SubItems.OfType<NavigatableCommand>().ToList());
+                        Printer.PrintSingleCommands(item.SubItems.OfType<SingleCommand>().ToList());
                         
                         Console.WriteLine();
                         Console.Write("Press enter to return to the menu");
@@ -54,37 +53,17 @@ namespace CommandRunner.Terminal
                     continue;
                 }
 
-                var matches =
-                    _state.Menu.Select(x => new {Key = x, Value = x.Match(arguments)})
-                        .Where(x => x.Value != MatchState.Miss)
-                        .ToDictionary(pair => pair.Key, pair => pair.Value);
-                if (!matches.Any())
+                var match = Match(arguments);
+                if (match == null) return;
+                if (match.Item2 == MatchState.TooManyArguments)
                 {
-                    ConsoleWrite.WriteErrorLine("Please provide a valid command.");
-                    continue;
+                    ConsoleWrite.WriteErrorLine(ErrorMessages.TooManyArguments);
+                    match.Item1.WriteToConsole();
                 }
-                foreach (KeyValuePair<ICommand, MatchState> match in matches)
+                else if (match.Item2 == MatchState.Matched)
                 {
-                    if (match.Value == MatchState.MissingParameter)
-                    {
-                        ConsoleWrite.WriteErrorLine("Make sure you provide all the arguments for your command:");
-                        match.Key.WriteToConsole();
-                    }
-                    else if (match.Value == MatchState.TooManyParameters)
-                    {
-                        ConsoleWrite.WriteErrorLine("Looks like you provided too much parameters for your command:");
-                        match.Key.WriteToConsole();
-                    }
-                    else if (match.Value == MatchState.WrongTypes)
-                    {
-                        ConsoleWrite.WriteErrorLine("The provided types did not match the method parameters!");
-                    }
-                    else if (match.Value == MatchState.Matched)
-                    {
-                        ExecuteCommand(match.Key, arguments);
-                    }
+                    ExecuteCommand(match.Item1, arguments);
                 }
-
             } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
 
             
@@ -98,120 +77,9 @@ namespace CommandRunner.Terminal
             return Console.ReadLine() ?? string.Empty;
         }
 
-        private void PrintMenu()
+        internal override void SetMenu(NavigatableCommand command)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            if (_state.ParentHierarchy.Any())
-            {
-                var currentMenuItem = _state.ParentHierarchy.Last();
-                if (currentMenuItem.Value.Command.AnnounceMethod != null)
-                {
-                    var instance = _state.StatefullCommandActivator(currentMenuItem.Key);
-                    currentMenuItem.Value.Command.AnnounceMethod.Invoke(instance, new object[0]);
-                }
-                else
-                {
-                    Console.WriteLine($"{_state.ParentHierarchy.Last().Value.Command.Identifier} menu:");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Main menu:");
-            }
-            
-            Console.ForegroundColor = _state.TerminalColor;
-
-            if (_state.NavigatableMenu.Any())
-            {
-                PrintNavigatableItems(_state.NavigatableMenu);
-            }
-
-            if (_state.SingleCommands.Any())
-            {
-                PrintSingleCommands(_state.SingleCommands);
-            }
-
-            if (_state.ParentHierarchy.Any())
-            {
-                Console.WriteLine("To go to the previous menu type `up`");
-            }
-        }
-
-        private void PrintNavigatableItems(List<NavigatableCommand> commands)
-        {
-            Console.WriteLine("Sub-menu's available (type help x to print sub items):");
-            foreach (ICommand command in commands.OrderBy(x => x.Identifier))
-            {
-                Console.Write("  ");
-                command.WriteToConsole();
-            }
-            Console.WriteLine();
-        }
-
-        private void PrintSingleCommands(List<SingleCommand> commands)
-        {
-            Console.WriteLine("Commands: ");
-            foreach (SingleCommand command in commands)
-            {
-                PrintCommand(command);
-            }
-        }
-
-        private void PrintCommand(SingleCommand command)
-        {
-            Console.Write("  ");
-            command.WriteToConsole();
-        }
-
-        private void PrintLine()
-        {
-            for (int i = 0; i < Console.WindowWidth; i++)
-            {
-                Console.Write("-");
-            }
-        }
-
-        private void ExecuteCommand(ICommand command, List<string> arguments )
-        {
-            try
-            {
-                var commandInstance = _state.StatefullCommandActivator(command.Type);
-                Console.ForegroundColor = _state.CommandColor;
-                var navigatableCommand = command as NavigatableCommand;
-                if (command.Parameters.Count > 0)
-                {
-                    var typedParameters =
-                        TypedParameterExecution.CreateTypedParameters(command.Parameters.ToArray(),
-                            command.ArgumentsWithoutIdentifier(arguments));
-                    command.MethodInfo.Invoke(commandInstance, typedParameters);
-
-                }
-                else
-                {
-                    //Navigation commands don't always have an initialize method
-                    if (navigatableCommand != null)
-                    {
-                        navigatableCommand.MethodInfo?.Invoke(commandInstance, null);
-                    }
-                    else
-                    {
-                        command.MethodInfo.Invoke(commandInstance, null);
-                    }
-                }
-                
-                if (navigatableCommand != null)
-                {
-                    _state.SetMenu(navigatableCommand.SubItems, navigatableCommand);
-                }
-            }
-            catch (Exception exception)
-            {
-                ConsoleWrite.WriteErrorLine($"We couldn't setup your command parameters. Exception: {exception.Message}");
-            }
-            finally
-            {
-                Console.ForegroundColor = _state.TerminalColor;
-            }
+            _state.SetMenu(command.SubItems, command);
         }
     }
 }

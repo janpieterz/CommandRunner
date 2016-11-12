@@ -16,5 +16,10 @@ namespace CommandRunner
     internal static class ErrorMessages
     {
         internal static string NoArgumentsProvided = "Please provide an argument";
+        internal static string NoMatch = "Please provide a valid command.";
+        internal static string MissingArgument = "Make sure you provide all the arguments for your command:";
+        internal static string TooManyArguments = "Looks like you provided too much arguments for your command:";
+        internal static string WrongTypes = "The provided types did not match the method parameters!";
+        internal static string TooManyMatches = "We've found too many matches!";
     }
 }

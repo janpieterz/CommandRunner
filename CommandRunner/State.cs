@@ -12,9 +12,10 @@ namespace CommandRunner
         internal ConsoleColor TerminalColor { get; set; }
         internal ConsoleColor CommandColor { get; set; }
         internal RunModes RunMode { get; set; }
-        internal List<ICommand> Menu { get; set; }
-        internal List<NavigatableCommand> NavigatableMenu => Menu.OfType<NavigatableCommand>().ToList();
-        internal List<SingleCommand> SingleCommands => Menu.OfType<SingleCommand>().ToList();
+        internal List<ICommand> ActiveMenu { get; set; }
+        internal List<ICommand> FullMenu { get; set; }
+        internal List<NavigatableCommand> NavigatableMenu => ActiveMenu.OfType<NavigatableCommand>().ToList();
+        internal List<SingleCommand> SingleCommands => ActiveMenu.OfType<SingleCommand>().ToList();
         internal List<Type> NavigatableTypes { get; set; }
         internal Func<Type, object> CommandActivator { private get; set; }
         internal List<string> Arguments { get; set; }

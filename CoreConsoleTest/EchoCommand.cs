@@ -96,7 +96,8 @@ namespace CommandRunner.CoreConsoleTest
         [Command("number")]
         public void RandomNumber()
         {
-            
+            Random random = new Random();
+            Console.Write(random.Next(1,100));
         }
     }
 

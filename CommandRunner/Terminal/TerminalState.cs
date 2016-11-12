@@ -6,7 +6,7 @@ namespace CommandRunner.Terminal {
 
         internal void SetMenu(List<ICommand> newMenu, ICommand parentCommand = null)
         {
-            Menu = newMenu;
+            ActiveMenu = newMenu;
             var command = parentCommand as NavigatableCommand;
             if (command != null && ParentHierarchy.ContainsKey(parentCommand.Type))
             {
@@ -21,11 +21,11 @@ namespace CommandRunner.Terminal {
             ParentHierarchy.Remove(previous.Key);
             if (ParentHierarchy.Any())
             {
-                Menu = ParentHierarchy.Last().Value.Command.SubItems;
+                ActiveMenu = ParentHierarchy.Last().Value.Command.SubItems;
             }
             else
             {
-                Menu = Menu;
+                ActiveMenu = FullMenu;
 
             }
         }

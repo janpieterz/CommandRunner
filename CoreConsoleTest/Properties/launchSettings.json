@@ -1,7 +1,8 @@
 {
   "profiles": {
     "CommandRunnerCoreTest": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "random number"
     },
     "CoreConsoleTest": {
       "commandName": "Project"

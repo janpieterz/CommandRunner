@@ -257,8 +257,8 @@ namespace CommandRunner {
             if (!_configuration.RunMode.HasValue)
             {
                 if (Arguments.Count == 0 ||
-                    (Arguments.FirstOrDefault() == Assembly.GetEntryAssembly().Location ||
-                     Arguments.FirstOrDefault().Contains("vshost.exe")))
+                    ((Arguments.FirstOrDefault() == Assembly.GetEntryAssembly().Location ||
+                     Arguments.FirstOrDefault().Contains("vshost.exe"))&& Arguments.Count == 1))
                 {
                     Mode = RunModes.Terminal;
                 }
@@ -301,7 +301,8 @@ namespace CommandRunner {
 
         private void SetupState(State state)
         {
-            state.Menu = Menu;
+            state.FullMenu = Menu;
+            state.ActiveMenu = Menu;
             state.CommandActivator = _configuration.CommandActivator;
             state.Arguments = Arguments;
             state.CommandColor = _configuration.CommandColor;

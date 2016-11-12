@@ -4,7 +4,7 @@
     {
         Matched,
         MissingParameter,
-        TooManyParameters,
+        TooManyArguments,
         Miss,
         WrongTypes
     }
