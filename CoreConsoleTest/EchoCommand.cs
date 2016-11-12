@@ -105,7 +105,7 @@ namespace CommandRunner.CoreConsoleTest
     public class AccountMenu
     {
         public Guid AccountId { get; set; }
-        [NavigatableCommandInitialisation]
+        [NavigatableCommandInitialization]
         public void Initialize(Guid accountId)
         {
             AccountId = accountId;
@@ -132,7 +132,7 @@ namespace CommandRunner.CoreConsoleTest
         public AccountMenu AccountMenu { get; set; }
         public Guid ClientId { get; set; }
 
-        [NavigatableCommandInitialisation]
+        [NavigatableCommandInitialization]
         public void Initialize(Guid clientId)
         {
             ClientId = clientId;

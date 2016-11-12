@@ -102,11 +102,11 @@ namespace CommandRunner
         {
             var initializeMethods =
                 navigatableCommand.GetMethods()
-                    .Where(x => x.GetCustomAttribute<NavigatableCommandInitialisationAttribute>() != null).ToList();
+                    .Where(x => x.GetCustomAttribute<NavigatableCommandInitializationAttribute>() != null).ToList();
             if (initializeMethods.Count > 1)
             {
                 throw new Exception(
-                    $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandInitialisationAttribute)}");
+                    $"{navigatableCommand.Name} has multiple methods with the attribute {nameof(NavigatableCommandInitializationAttribute)}");
             }
             var initializeMethod = initializeMethods.SingleOrDefault();
             typedNavigatableCommand.Parameters = initializeMethod?.GetParameters().ToList();

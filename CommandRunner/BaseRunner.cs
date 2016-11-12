@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace CommandRunner
 {
-    public abstract class BaseRunner
+    internal abstract class BaseRunner
     {
         internal readonly State State;
 
