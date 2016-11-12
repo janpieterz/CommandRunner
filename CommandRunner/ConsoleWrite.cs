@@ -2,9 +2,9 @@ using System;
 
 namespace CommandRunner
 {
-    public static class ConsoleWrite
+    internal static class ConsoleWrite
     {
-        public static void WriteErrorLine(string message)
+        internal static void WriteErrorLine(string message)
         {
             var previousColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
@@ -13,8 +13,8 @@ namespace CommandRunner
         }
     }
 
-    public static class ErrorMessages
+    internal static class ErrorMessages
     {
-        public static string NoArgumentsProvided = "Please provide an argument";
+        internal static string NoArgumentsProvided = "Please provide an argument";
     }
 }

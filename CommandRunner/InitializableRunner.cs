@@ -16,7 +16,7 @@ namespace CommandRunner {
             _configuration = configuration;
         }
 
-        public IStartableRunner Initialize() {
+        internal IStartableRunner Initialize() {
             ScanTypes();
             SetArguments();
             SetMode();
@@ -179,7 +179,7 @@ namespace CommandRunner {
 
         }
 
-        public NavigatableCommand ProcessNavigatableCommand(Type navigatableCommand, NavigatableCommandAttribute navigatableAttribute, List<Type> scannedTypes)
+        internal NavigatableCommand ProcessNavigatableCommand(Type navigatableCommand, NavigatableCommandAttribute navigatableAttribute, List<Type> scannedTypes)
         {
             scannedTypes.Add(navigatableCommand);
             

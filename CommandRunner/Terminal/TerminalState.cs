@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace CommandRunner.Terminal {
     internal sealed class TerminalState : State {
 
-        public void SetMenu(List<ICommand> newMenu, ICommand parentCommand = null)
+        internal void SetMenu(List<ICommand> newMenu, ICommand parentCommand = null)
         {
             Menu = newMenu;
             var command = parentCommand as NavigatableCommand;
@@ -16,7 +14,7 @@ namespace CommandRunner.Terminal {
             }
         }
 
-        public void MoveUp()
+        internal void MoveUp()
         {
             if (!ParentHierarchy.Any()) return;
             var previous = ParentHierarchy.Last();

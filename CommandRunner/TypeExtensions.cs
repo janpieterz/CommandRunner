@@ -6,15 +6,15 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
-        public static bool IsIList(this Type type)
+        internal static bool IsIList(this Type type)
         {
             return type.GetInterfaces()
                 .Any(x => x == typeof(IList));
         }
 
-        public static Type GetEnumerableType(this Type type)
+        internal static Type GetEnumerableType(this Type type)
         {
             foreach (Type @interface in type.GetInterfaces())
             {
@@ -27,7 +27,7 @@ namespace CommandRunner
             return null;
         }
 
-        public static bool IsEnumerable(this Type type)
+        internal static bool IsEnumerable(this Type type)
         {
             if (type == typeof(string)) return false;
             foreach (Type @interface in type.GetInterfaces())
@@ -40,7 +40,7 @@ namespace CommandRunner
             }
             return false;
         }
-        public static void SetConsoleColor(this Type type)
+        internal static void SetConsoleColor(this Type type)
         {
             if ((type.GetTypeInfo().IsValueType || type == typeof(string)) && (type != typeof(Guid)))
             {
@@ -52,7 +52,7 @@ namespace CommandRunner
             }
         }
 
-        public static void WriteTypeName(this Type type)
+        internal static void WriteTypeName(this Type type)
         {
             if (type == typeof(string))
             {
