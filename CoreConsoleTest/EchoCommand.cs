@@ -15,7 +15,7 @@ namespace CommandRunner.CoreConsoleTest
         }
 
         [Command("techo", "Echo back with parsed param")]
-        public void Execute(string whatever, bool say, int count, Guid itemId)
+        public void Execute(string whatever, bool say, int count)
         {
             for (int i = 0; i < count; i++)
             {

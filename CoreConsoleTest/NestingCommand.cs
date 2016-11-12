@@ -2,7 +2,7 @@
 
 namespace CommandRunner.CoreConsoleTest
 {
-    [Command("nest", "Commands can nest too.")]
+    [NestedCommand("nest")]
     public class NestingCommand
     {
         [Command("hello", "Say hello")]

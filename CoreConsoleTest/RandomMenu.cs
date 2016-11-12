@@ -9,7 +9,7 @@ namespace CommandRunner.CoreConsoleTest
         public void RandomNumber()
         {
             Random random = new Random();
-            Console.Write(random.Next(1,100));
+            Console.WriteLine(random.Next(1,100));
         }
     }
 }

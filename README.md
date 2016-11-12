@@ -2,90 +2,110 @@
 A simple command runner to enable quick command line (developer) tools
 The runner is still in development mode so there will be breaking changes.
 
-# Usage
+# Simple Usage
 ```c#
 static void Main(string[] args)
 {
-    new Runner.Run();
+	RunnerConfiguration configuration = new RunnerConfiguration("Example Runner");
+	Runner.Start(configuration);
 }
 
 public class EchoCommand 
 {
 
-    [Command("echo", "Echo back anything following the command.")]
-    public void Execute(List<string> args)
-    {
-        foreach (var arg in args) Console.WriteLine(arg);
-    }
+	[Command("echo", "Echo back anything following the command.")]
+	public void Execute(List<string> args)
+	{
+		foreach (var arg in args) Console.WriteLine(arg);
+	}
 }
 
-[Command("nest")]
+[NestedCommand("nest")]
 public class NestingCommand
 {
-    [Command("hello", "Say hello")]
-    public void Hello()
-    {
-        Console.WriteLine("Hello");
-    }
+	[Command("hello", "Say hello")]
+	public void Hello()
+	{
+		Console.WriteLine("Hello");
+	}
 }
 ```
+The library accepts typed parameters and is able to easily setup a quick command line tool.
+The library will try to map the arguments if it sees typed arguments. To prevent this, accept a list of strings in your method to parse it yourself, or no parameter at all if nothing is needed.
 
-For more usage refer to the CoreConsoleTest app where you should be able to easily play around with all concepts and options.
-The library will try to map the arguments if it sees typed arguments. To prevent this, accept a list of strings in your method to parse it yourself, or no parameter at all.
+# Attributes used to setup your runner(make sure to check the CoreconsoleTest app for examples):
+```c#
+[Command("identifier", "help")]
+```
+This attribute (used on methods) signals the runner it can run this method using the identifier. Can be used in a NestedCommand and a NavigatableCommand
+```c#
+[NestedCommand("pre-identifier", "help")]
+```
+This attribute, used on a class is more for easy prepending of all commands. All methods in the class that use the Command attribute will have their identifier prepended like: '{NestedIdentifier} {CommandIdentifier}'.
+```c#
+[NavigatableCommand("identifier", "help")]
+```
+This attribute, used on a class, signals a menu that can be used to navigate into. Child items won't be visible until navigated upon. If there is a multi-layer menu, the parent Menu class will be set on the child if there is a property of that type.
+```c#
+[NavigatableCommandAnnouncement]
+```
+This attribute, used on a method, will be called in the terminal mode instead of displaying the identifier when navigated into the command.
 
-# Advanced usage
+```c#
+[NavigatableCommandInitialization]
+```
+This attribute, used on a method, will be called when navigating to a command. This can be used to setup the menu environment, for example an account menu with a specific account id to then only execute every method on this instance. The Initialize method is able to accept typed parameters like other command methods.
+
+
+# Settings
 
 ## Using custom creator
 
 ```c#
 private static void RunWithAutofacCreator()
 {
-    var container = CreateContainer();
-    new Runner(options =>
-    {
-        options.Title = "Command Runner";
-        options.Scan.AllAssemblies();
-        options.Activate.WithCustomActivator(type => container.Resolve(type));
-    }).Run();
+	var container = CreateContainer();
+	var container = CreateContainer();
+	RunnerConfiguration configuration = new RunnerConfiguration("Example Runner");
+	configuration.UseCommandActivator(type => container.Resolve(type));
+	Runner.Start(configuration);
 }
 
 private static IContainer CreateContainer()
 {
-    var builder = new ContainerBuilder();
-    builder.RegisterType<EchoCommand>().PropertiesAutowired();
-    builder.RegisterType<Injectable>().PropertiesAutowired();
-    builder.RegisterType<NestingCommand>().PropertiesAutowired();
-    return builder.Build();
+	var builder = new ContainerBuilder();
+	builder.RegisterType<EchoCommand>().PropertiesAutowired();
+	builder.RegisterType<Injectable>().PropertiesAutowired();
+	builder.RegisterType<NestingCommand>().PropertiesAutowired();
+	return builder.Build();
 }
 ```
 
 ## Using provided assemblies
 
 ```c#
-new Runner(options =>
-{
-    options.Scan.SpecificAssemblies(new List<Assembly>() {Assembly.GetEntryAssembly()});
-}).Run();
+configuration.ScanAssemblies(new List<Assembly>() {typeof(EchoCommand).GetTypeInfo().Assembly});
 ```
 
 ## Using provided types
 
 ```c#
-new Runner(options =>
-{
-    options.Scan.SpecificTypes(new List<Type>() { typeof(EchoCommand)});
-}).Run();
+configuration.ScanTypes(new List<Type>() {typeof(EchoCommand), typeof(AccountMenu)});
 ```
 
-## Using custom menu
-
+## Setting specific colors:
+```c#
+configuration.UseTerminalColor(ConsoleColor.DarkGreen);
+configuration.UseCommandColor(ConsoleColor.Yellow);
 ```
-new Runner(options =>
-{
-    options.UseMenuItems(new List<IMenuItem>()
-    {
-        new ReflectedMethodCommand("reflect", "Custom reflected method command", GetTestMethodInfo()),
-        new CustomActivatorCommand("activator", "Custom activator method command", GetTestMethodInfo(), type => new NestingCommand())
-    }); 
-}).Run();
+
+## Forcing mode
+```c#
+configuration.ForceTerminal();
+configuration.ForceCommandLine();
+```
+
+## Provide arguments (only applicable for command line mode)
+```c#
+configuration.UseArguments(new List<string>() {"test", "different", "arguments"});
 ```

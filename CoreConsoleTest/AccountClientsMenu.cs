@@ -16,7 +16,7 @@ namespace CommandRunner.CoreConsoleTest
         [NavigatableCommandAnnouncement]
         public void Announce()
         {
-            Console.WriteLine("Client menu for account {0}", ClientId);
+            Console.WriteLine("Custom Announce: Client menu for Main Client");
         }
 
         [Command("show users")]
