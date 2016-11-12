@@ -4,15 +4,16 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public static class ParameterInfoColoredWriterExtensions
+    internal static class ParameterInfoColoredWriterExtensions
     {
-        public static void WriteToColoredConsole(this ParameterInfo parameterInfo, bool previousParameter)
+        internal static void WriteToColoredConsole(this ParameterInfo parameterInfo, bool previousParameter)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(previousParameter ? ", " : " (");
 
             parameterInfo.ParameterType.SetConsoleColor();
             
+            //TODO: Refactor below if
             if (parameterInfo.ParameterType.GetTypeInfo().IsGenericType && parameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 //Process nullable Guid? etc
@@ -78,38 +79,6 @@ namespace CommandRunner
                 {
                     Console.Write(parameterInfo.DefaultValue);
                 }
-            }
-        }
-
-        public static void SetConsoleColor(this Type type)
-        {
-            if ((type.GetTypeInfo().IsValueType || type== typeof(string)) && (type != typeof(Guid)))
-            {
-                Console.ForegroundColor = ConsoleColor.Blue;
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-            }
-        }
-
-        public static void WriteTypeName(this Type type)
-        {
-            if (type == typeof(string))
-            {
-                Console.Write("string");
-            }
-            else if (type == typeof(int))
-            {
-                Console.Write("int");
-            }
-            else if (type == typeof(bool))
-            {
-                Console.Write("bool");
-            }
-            else
-            {
-                Console.Write(type.Name);
             }
         }
     }

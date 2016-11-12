@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public interface ICommand
+    internal interface ICommand
     {
         MethodInfo MethodInfo { get; }
         List<ParameterInfo> Parameters { get; }

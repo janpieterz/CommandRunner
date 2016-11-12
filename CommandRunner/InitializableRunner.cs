@@ -6,7 +6,7 @@ using CommandRunner.Terminal;
 using CommandRunner.CommandLine;
 
 namespace CommandRunner {
-    class InitializableRunner {
+    internal class InitializableRunner {
         readonly RunnerConfiguration _configuration;
         private List<Type> NavigatableTypes { get; set; }
         private List<ICommand> Menu { get; set; }

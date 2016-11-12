@@ -1,48 +1,8 @@
 ﻿using System.Collections.Generic;
 namespace CommandRunner
 {
-    public class InputParser
+    internal class InputParser
     {
-        // public static Tuple<ICommand, IEnumerable<string>>FindCommand(IEnumerable<IMenuItem> menuItems, IEnumerable<string> arguments)
-        // {
-        //     var argumentsAsList = arguments.ToList();
-        //     var commandsAsList = ParseMenuItemsToCommands(menuItems).ToList();
-
-        //     var firstArgument = argumentsAsList.FirstOrDefault();
-        //     if (firstArgument == null)
-        //     {
-        //         Console.WriteLine("Please provide a valid command. No input provided.");
-        //         return new Tuple<ICommand, IEnumerable<string>>(null, null);
-        //     }
-
-        //     string identifier = string.Empty;
-        //     foreach (var argument in argumentsAsList)
-        //     {
-        //         identifier = string.IsNullOrWhiteSpace(identifier) ? argument : $"{identifier} {argument}";
-        //         IMenuItem command = commandsAsList.FirstOrDefault(x => x.Title.Equals(identifier, StringComparison.OrdinalIgnoreCase));
-                
-        //         if (command != null)
-        //         {
-        //             return new Tuple<ICommand, IEnumerable<string>>(command as IWritableMenuItem, argumentsAsList.Skip(identifier.Split(' ').Length));
-        //         }
-        //     }
-
-        //     Console.WriteLine($"Please provide a valid command. Input was: {identifier}");
-        //     return new Tuple<ICommand, IEnumerable<string>>(null, null);
-        // }
-
-        // public static IEnumerable<ICommand> ParseMenuItemsToCommands(IEnumerable<IMenuItem> menuItems)
-        // {
-        //     var commandsAsList = menuItems.ToList();
-
-        //     foreach (ContainerCommand command in commandsAsList.OfType<ContainerCommand>().ToList())
-        //     {
-        //         commandsAsList.AddRange(command.Items);
-        //         commandsAsList.Remove(command);
-        //     }
-        //     return commandsAsList.Cast<ICommand>();
-        // }
-
         public static IEnumerable<string> ParseInputToArguments(string input)
         {
             List<string> arguments = new List<string>();

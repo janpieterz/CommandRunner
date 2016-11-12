@@ -4,9 +4,9 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public class Reflection
+    internal class Reflection
     {
-        public static IEnumerable<Assembly> GetAllReferencedAssemblies()
+        internal static IEnumerable<Assembly> GetAllReferencedAssemblies()
         {
             var assemblyNames = Assembly.GetEntryAssembly().GetReferencedAssemblies();
             var assemblies = new List<Assembly>();
@@ -18,7 +18,7 @@ namespace CommandRunner
             return assemblies;
         }
 
-        public static IEnumerable<Type> GetAllTypes(IEnumerable<Assembly> assemblies) {
+        internal static IEnumerable<Type> GetAllTypes(IEnumerable<Assembly> assemblies) {
             var types = new List<Type>();
             foreach (Assembly assembly in assemblies)
             {

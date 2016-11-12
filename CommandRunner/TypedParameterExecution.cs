@@ -7,9 +7,9 @@ using System.Reflection;
 
 namespace CommandRunner
 {
-    public class TypedParameterExecution
+    internal class TypedParameterExecution
     {
-        public static void Execute(object @class, MethodInfo methodInfo, List<string> arguments)
+        internal static void Execute(object @class, MethodInfo methodInfo, List<string> arguments)
         {
             var parameters = methodInfo.GetParameters();
             if (parameters.Length > 0)
@@ -32,7 +32,7 @@ namespace CommandRunner
                 methodInfo.Invoke(@class, null);
             }
         }
-        public static object[] CreateTypedParameters(ParameterInfo[] parameters, List<string> arguments)
+        internal static object[] CreateTypedParameters(ParameterInfo[] parameters, List<string> arguments)
         {
             List<object> typedParameters = new List<object>();
             bool encounteredIList = parameters.Any() && parameters.LastOrDefault().ParameterType.IsIList();

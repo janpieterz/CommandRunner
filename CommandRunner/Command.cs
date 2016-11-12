@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace CommandRunner
 {
-    public class SingleCommand : CommandBase, ICommand
+    internal class SingleCommand : CommandBase, ICommand
     {
         public void WriteToConsole()
         {

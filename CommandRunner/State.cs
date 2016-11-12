@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CommandRunner.Terminal;
 
 namespace CommandRunner
 {
@@ -48,9 +47,9 @@ namespace CommandRunner
             return instance;
         }
     }
-    public class ParentCommand
+    internal class ParentCommand
     {
-        public object Instance { get; set; }
-        public NavigatableCommand Command { get; set; }
+        internal object Instance { get; set; }
+        internal NavigatableCommand Command { get; set; }
     }
 }

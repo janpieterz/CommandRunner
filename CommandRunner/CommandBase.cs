@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace CommandRunner
 {
-    public class CommandBase
+    internal abstract class CommandBase
     {
         public string Help { get; set; }
         public int MinimumParameters { get; set; }
-        private List<ParameterInfo> _parameters;
+        public Type Type { get; set; }
         public MethodInfo MethodInfo { get; set; }
+        public string Identifier { get; set; }
+        private List<ParameterInfo> _parameters;
         public List<ParameterInfo> Parameters
         {
             get { return _parameters; }
@@ -32,7 +33,6 @@ namespace CommandRunner
             }
         }
 
-        public string Identifier { get; set; }
         public MatchState Match(List<string> arguments)
         {
             string currentSearch = string.Empty;
@@ -69,51 +69,6 @@ namespace CommandRunner
         public override string ToString()
         {
             return Identifier;
-        }
-        public Type Type { get; set; }
-    }
-    public enum MatchState
-    {
-        Matched,
-        MissingParameter,
-        TooManyParameters,
-        Miss,
-        WrongTypes
-    }
-
-    public static class TypeExtensions
-    {
-        public static bool IsIList(this Type type)
-        {
-            return type.GetInterfaces()
-                .Any(x => x == typeof(IList));
-        }
-
-        public static Type GetEnumerableType(this Type type)
-        {
-            foreach (Type @interface in type.GetInterfaces())
-            {
-                if (@interface.GetTypeInfo().IsGenericType
-                    && @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                {
-                    return @interface.GetGenericArguments()[0];
-                }
-            }
-            return null;
-        }
-
-        public static bool IsEnumerable(this Type type)
-        {
-            if (type == typeof(string)) return false;
-            foreach (Type @interface in type.GetInterfaces())
-            {
-                if (@interface.GetTypeInfo().IsGenericType
-                    && @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }
