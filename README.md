@@ -1,7 +1,7 @@
 # CommandRunner
 A simple command runner to enable quick command line (developer) tools
 
-![demo](https://github.com/janpieterz/CommandRunner/blob/master/GifCommandRunner.gif|alt=demo)
+![demo](https://github.com/janpieterz/CommandRunner/blob/master/GifCommandRunner.gif)
 
 # Simple Usage
 ```c#
