@@ -14,7 +14,7 @@ namespace CommandRunner.CoreConsoleTest
         public static void Main(string[] args)
         {
             RunnerConfiguration configuration = new RunnerConfiguration("Example Runner");
-            configuration.ScanTypes(new List<Type>() {typeof(AccountMenu), typeof(EchoCommand), typeof(RandomMenu)});
+            configuration.ScanTypes(new List<Type>() { typeof(RandomMenu),typeof(AccountMenu), typeof(EchoCommand),typeof(NestingCommand)});
             Runner.Start(configuration);
             //configuration.ForceCommandLine();
             //configuration.ScanAllAssemblies();

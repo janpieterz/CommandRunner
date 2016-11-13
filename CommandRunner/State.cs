@@ -14,8 +14,8 @@ namespace CommandRunner
         internal RunModes RunMode { get; set; }
         internal List<ICommand> ActiveMenu { get; set; }
         internal List<ICommand> FullMenu { get; set; }
-        internal List<NavigatableCommand> NavigatableMenu => ActiveMenu.OfType<NavigatableCommand>().ToList();
-        internal List<SingleCommand> SingleCommands => ActiveMenu.OfType<SingleCommand>().ToList();
+        internal List<NavigatableCommand> NavigatableMenu => ActiveMenu.OfType<NavigatableCommand>().OrderBy(x => x.Identifier).ToList();
+        internal List<SingleCommand> SingleCommands => ActiveMenu.OfType<SingleCommand>().OrderBy(x => x.Identifier).ToList();
         internal List<Type> NavigatableTypes { get; set; }
         internal Func<Type, object> CommandActivator { private get; set; }
         internal List<string> Arguments { get; set; }

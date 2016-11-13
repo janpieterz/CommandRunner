@@ -48,7 +48,7 @@ namespace CommandRunner.Terminal
         internal static void PrintNavigatableItems(List<NavigatableCommand> commands)
         {
             Console.WriteLine("Sub-menu's available (type help x to print sub items):");
-            foreach (ICommand command in commands.OrderBy(x => x.Identifier))
+            foreach (ICommand command in commands)
             {
                 Console.Write("  ");
                 command.WriteToConsole();
