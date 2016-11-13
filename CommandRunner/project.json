@@ -1,9 +1,8 @@
 {
-  "version": "2.0.0-beta03",
+  "version": "2.0.0-beta04",
   "description": "Simple CommanrRunner to bootstrap console applications",
   "authors": [ "Jan-Pieter Zoutewelle" ],
   "dependencies": {
-    "NETStandard.Library": "1.6.0"
   },
   "packOptions": {
     "licenseUrl": "https://raw.githubusercontent.com/janpieterz/CommandRunner/master/LICENSE",
@@ -15,6 +14,7 @@
     "netstandard1.6": {
       "imports": "dnxcore50",
       "dependencies": {
+        "NETStandard.Library": "1.6.0",
         "System.Console": "4.0.0",
         "System.Reflection.TypeExtensions": "4.1.0",
         "System.Runtime.Loader": "4.0.0"

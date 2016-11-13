@@ -2480,7 +2480,7 @@
           "lib/netstandard1.1/xunit.runner.utility.dotnet.dll": {}
         }
       },
-      "CommandRunner/2.0.0-beta02": {
+      "CommandRunner/2.0.0-beta03": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
@@ -7478,7 +7478,7 @@
         "xunit.runner.utility.nuspec"
       ]
     },
-    "CommandRunner/2.0.0-beta02": {
+    "CommandRunner/2.0.0-beta03": {
       "type": "project",
       "path": "../CommandRunner/project.json",
       "msbuildProject": "../CommandRunner/CommandRunner.xproj"
