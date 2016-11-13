@@ -75,6 +75,10 @@ namespace CommandRunner
             {
                 Console.Write("bool");
             }
+            else if (type == typeof(decimal))
+            {
+                Console.Write("decimal");
+            }
             else
             {
                 Console.Write(type.Name);
