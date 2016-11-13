@@ -37,14 +37,6 @@ namespace CommandRunner
                     property.SetValue(instance, ParentHierarchy[property.PropertyType].Instance);
                 }
             }
-
-            if (NavigatableTypes.Exists(c => c == type))
-            {
-                ParentHierarchy.Add(type, new ParentCommand
-                {
-                    Instance = instance
-                });
-            }
             return instance;
         }
     }

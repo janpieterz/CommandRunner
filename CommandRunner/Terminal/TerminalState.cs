@@ -4,14 +4,14 @@ using System.Linq;
 namespace CommandRunner.Terminal {
     internal sealed class TerminalState : State {
 
-        internal void SetMenu(List<ICommand> newMenu, ICommand parentCommand = null)
+        internal void SetMenu(NavigatableCommand parentCommand, object instance)
         {
-            ActiveMenu = newMenu;
-            var command = parentCommand as NavigatableCommand;
-            if (command != null && ParentHierarchy.ContainsKey(parentCommand.Type))
+            ActiveMenu = parentCommand.SubItems;
+            ParentHierarchy[parentCommand.Type] = new ParentCommand()
             {
-                ParentHierarchy[parentCommand.Type].Command = command;
-            }
+                Command = parentCommand,
+                Instance = instance
+            };
         }
 
         internal void MoveUp()

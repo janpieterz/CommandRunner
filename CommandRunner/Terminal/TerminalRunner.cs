@@ -54,7 +54,7 @@ namespace CommandRunner.Terminal
                 }
 
                 var match = Match(arguments);
-                if (match == null) return;
+                if (match == null) continue;
                 if (match.Item2 == MatchState.TooManyArguments)
                 {
                     ConsoleWrite.WriteErrorLine(ErrorMessages.TooManyArguments);
@@ -77,9 +77,9 @@ namespace CommandRunner.Terminal
             return Console.ReadLine() ?? string.Empty;
         }
 
-        internal override void SetMenu(NavigatableCommand command)
+        internal override void SetMenu(NavigatableCommand command, object commandInstance)
         {
-            _state.SetMenu(command.SubItems, command);
+            _state.SetMenu(command, commandInstance);
         }
     }
 }

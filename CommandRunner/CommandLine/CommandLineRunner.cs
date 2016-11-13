@@ -33,10 +33,20 @@ namespace CommandRunner.CommandLine
             var navigatableCommand = match.Item1 as NavigatableCommand;
             if (navigatableCommand != null)
             {
-                ExecuteCommand(match.Item1, _state.Arguments);
-                _state.Arguments = _state.Arguments.Skip(navigatableCommand.Identifier.Split(' ').Length)
+                var result = ExecuteCommand(match.Item1, _state.Arguments);
+                if (result)
+                {
+                    _state.Arguments = _state.Arguments.Skip(navigatableCommand.Identifier.Split(' ').Length)
                     .Skip(navigatableCommand.MinimumParameters).ToList();
-                FindAndExecuteCommand();
+                    if (_state.Arguments.Any())
+                    {
+                        FindAndExecuteCommand();
+                    }
+                    else
+                    {
+                        ConsoleWrite.WriteErrorLine("We seem to be missing a follow up command.");
+                    }
+                }
             }
             else
             {
@@ -52,9 +62,14 @@ namespace CommandRunner.CommandLine
             }
         }
 
-        internal override void SetMenu(NavigatableCommand command)
+        internal override void SetMenu(NavigatableCommand command, object commandInstance)
         {
             State.ActiveMenu = command.SubItems;
+            State.ParentHierarchy[command.Type] = new ParentCommand()
+            {
+                Command = command,
+                Instance = commandInstance
+            };
         }
     }
 }

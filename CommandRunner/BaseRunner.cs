@@ -65,7 +65,7 @@ namespace CommandRunner
                 }
             }
         }
-        internal void ExecuteCommand(ICommand command, List<string> arguments)
+        internal bool ExecuteCommand(ICommand command, List<string> arguments)
         {
             try
             {
@@ -77,6 +77,10 @@ namespace CommandRunner
                     var typedParameters =
                         TypedParameterExecution.CreateTypedParameters(command.Parameters.ToArray(),
                             command.ArgumentsWithoutIdentifier(arguments));
+                    if (typedParameters.Length != command.Parameters.Count)
+                    {
+                        return false;
+                    }
                     command.MethodInfo.Invoke(commandInstance, typedParameters);
 
                 }
@@ -95,12 +99,14 @@ namespace CommandRunner
 
                 if (navigatableCommand != null)
                 {
-                    SetMenu(navigatableCommand);
+                    SetMenu(navigatableCommand, commandInstance);
                 }
+                return true;
             }
             catch (Exception exception)
             {
                 ConsoleWrite.WriteErrorLine($"We couldn't setup your command parameters. Exception: {exception.Message}");
+                return false;
             }
             finally
             {
@@ -108,6 +114,6 @@ namespace CommandRunner
             }
         }
 
-        internal abstract void SetMenu(NavigatableCommand command);
+        internal abstract void SetMenu(NavigatableCommand command, object commandInstance);
     }
 }
