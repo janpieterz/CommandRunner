@@ -26,7 +26,7 @@ namespace CommandRunner
             }
             if (!string.IsNullOrWhiteSpace(buffer))
             {
-                arguments.Add(buffer.ToLowerInvariant());
+                arguments.Add(buffer);
             }
             return arguments;
         }
