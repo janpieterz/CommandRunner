@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace CommandRunner.ConsoleApplicationTest
@@ -7,15 +8,12 @@ namespace CommandRunner.ConsoleApplicationTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Assembly.GetEntryAssembly().Location);
-            var arguments = Environment.GetCommandLineArgs();
-            new Runner(options =>
-            {
-                options.Title = "Command Runner";
-                options.Scan.AllAssemblies();
-                options.Activate.WithReflectionActivator();
 
-            }).Run();
+            Console.WriteLine(Assembly.GetEntryAssembly().Location);
+            RunnerConfiguration configuration = new RunnerConfiguration("Example Runner");
+            configuration.ScanTypes(new List<Type>() { typeof(EchoCommand), typeof(NestingCommand) });
+            configuration.ForceTerminal();
+            Runner.Start(configuration);
         }
     }
 }

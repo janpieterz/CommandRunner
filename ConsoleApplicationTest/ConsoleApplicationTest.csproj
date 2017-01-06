@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommandRunner, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandRunner.2.0.0-beta01\lib\net45\CommandRunner.dll</HintPath>
+      <HintPath>..\packages\CommandRunner.2.0.0-beta05\lib\net45\CommandRunner.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

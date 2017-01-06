@@ -15,11 +15,15 @@ namespace CommandRunner.Terminal
             string input;
             do
             {
+                Console.WriteLine("Setting foreground color to terminal color");
                 Console.ForegroundColor = _state.TerminalColor;
                 Printer.PrintLine();
                 Printer.PrintMenu(_state);
                 input = QueryForcommand();
-
+                if (input == null)
+                {
+                    break;
+                }
                 var arguments = InputParser.ParseInputToArguments(input).ToList();
                 Console.WriteLine();
                 if (!arguments.Any())
@@ -65,7 +69,7 @@ namespace CommandRunner.Terminal
                     ExecuteCommand(match.Item1, arguments);
                 }
             } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
-            if (!input.Equals("EXIT", StringComparison.OrdinalIgnoreCase))
+            if (input != null && !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase))
             {
                 Console.ReadLine();
             }
@@ -75,7 +79,8 @@ namespace CommandRunner.Terminal
         {
             Console.Write($"{Environment.NewLine}Command> ");
             Console.ForegroundColor = _state.CommandColor;
-            return Console.ReadLine() ?? string.Empty;
+            var result = Console.ReadLine();
+            return result;
         }
 
         internal override void SetMenu(NavigatableCommand command, object commandInstance)
