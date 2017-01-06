@@ -65,9 +65,10 @@ namespace CommandRunner.Terminal
                     ExecuteCommand(match.Item1, arguments);
                 }
             } while (string.IsNullOrEmpty(input) || !input.Equals("EXIT", StringComparison.OrdinalIgnoreCase));
-
-            
-            Console.ReadLine();
+            if (!input.Equals("EXIT", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.ReadLine();
+            }
         }
 
         private string QueryForcommand()
