@@ -15,7 +15,6 @@ namespace CommandRunner.Terminal
             string input;
             do
             {
-                Console.WriteLine("Setting foreground color to terminal color");
                 Console.ForegroundColor = _state.TerminalColor;
                 Printer.PrintLine();
                 Printer.PrintMenu(_state);
