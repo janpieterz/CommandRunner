@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace CommandRunner
 {
@@ -13,6 +14,7 @@ namespace CommandRunner
         MatchState Match(List<string> arguments);
         List<string> ArgumentsWithoutIdentifier(List<string> arguments);
         Type Type { get; }
+        void Invoke(object instance, object[] parameters);
 
     }
 }

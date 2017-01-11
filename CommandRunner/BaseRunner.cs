@@ -81,7 +81,7 @@ namespace CommandRunner
                     {
                         return false;
                     }
-                    command.MethodInfo.Invoke(commandInstance, typedParameters);
+                    command.Invoke(commandInstance, typedParameters);
 
                 }
                 else
@@ -89,11 +89,11 @@ namespace CommandRunner
                     //Navigation commands don't always have an initialize method
                     if (navigatableCommand != null)
                     {
-                        navigatableCommand.MethodInfo?.Invoke(commandInstance, null);
+                        navigatableCommand.Invoke(commandInstance, null);
                     }
                     else
                     {
-                        command.MethodInfo.Invoke(commandInstance, null);
+                        command.Invoke(commandInstance, null);
                     }
                 }
 

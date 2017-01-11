@@ -65,6 +65,31 @@ namespace CommandRunner
             var possibleArguments = arguments.Skip(Identifier.Split(' ').Length).ToList();
             return possibleArguments;
         }
+
+        public void Invoke(object instance, object[] parameters)
+        {
+            if (MethodInfo != null)
+            {
+                try
+                {
+                    MethodInfo.Invoke(instance, parameters);
+                }
+                catch (TargetInvocationException exception) when(exception.InnerException != null)
+                {
+                    ConsoleWrite.WriteErrorLine(
+                        $"Exception occured while executing the command '{Identifier}'");
+                    ConsoleWrite.WriteErrorLine($"{exception.InnerException.GetType()}: {exception.InnerException.Message}");
+                    ConsoleWrite.WriteErrorLine(exception.StackTrace);
+                }
+                catch (Exception exception)
+                {
+                    ConsoleWrite.WriteErrorLine(
+                        $"Exception occured while executing the command {Identifier}: {exception.GetType()}: {exception.Message}");
+                    ConsoleWrite.WriteErrorLine(exception.StackTrace);
+                }
+            }
+            
+        }
         public override string ToString()
         {
             return Identifier;

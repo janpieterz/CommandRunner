@@ -9,29 +9,6 @@ namespace CommandRunner
 {
     internal class TypedParameterExecution
     {
-        internal static void Execute(object @class, MethodInfo methodInfo, List<string> arguments)
-        {
-            var parameters = methodInfo.GetParameters();
-            if (parameters.Length > 0)
-            {
-                if (parameters.First().ParameterType == typeof(List<string>))
-                {
-                    methodInfo.Invoke(@class, new object[] { arguments });
-                }
-                else if (parameters.Length == arguments.Count)
-                {
-                    methodInfo.Invoke(@class, CreateTypedParameters(parameters, arguments));
-                }
-                else
-                {
-                    Console.WriteLine("We couldn't match the parameters.");
-                }
-            }
-            else
-            {
-                methodInfo.Invoke(@class, null);
-            }
-        }
         internal static object[] CreateTypedParameters(ParameterInfo[] parameters, List<string> arguments)
         {
             List<object> typedParameters = new List<object>();
