@@ -1,6 +1,6 @@
 {
   "version": "2.1.0",
-  "description": "Simple CommanrRunner to bootstrap console applications",
+  "description": "Simple CommandRunner to bootstrap console applications",
   "authors": [ "Jan-Pieter Zoutewelle" ],
   "dependencies": {
   },
