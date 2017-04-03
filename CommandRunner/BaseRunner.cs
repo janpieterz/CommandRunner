@@ -72,6 +72,7 @@ namespace CommandRunner
                 var commandInstance = State.StatefullCommandActivator(command.Type);
                 Console.ForegroundColor = State.CommandColor;
                 var navigatableCommand = command as NavigatableCommand;
+                bool result = false;
                 if (command.Parameters.Count > 0)
                 {
                     var typedParameters =
@@ -81,7 +82,7 @@ namespace CommandRunner
                     {
                         return false;
                     }
-                    command.Invoke(commandInstance, typedParameters);
+                    result = command.Invoke(commandInstance, typedParameters);
 
                 }
                 else
@@ -89,11 +90,11 @@ namespace CommandRunner
                     //Navigation commands don't always have an initialize method
                     if (navigatableCommand != null)
                     {
-                        navigatableCommand.Invoke(commandInstance, null);
+                        result = navigatableCommand.Invoke(commandInstance, null);
                     }
                     else
                     {
-                        command.Invoke(commandInstance, null);
+                        result =  command.Invoke(commandInstance, null);
                     }
                 }
 
@@ -101,7 +102,7 @@ namespace CommandRunner
                 {
                     SetMenu(navigatableCommand, commandInstance);
                 }
-                return true;
+                return result;
             }
             catch (Exception exception)
             {

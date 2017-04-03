@@ -16,10 +16,5 @@ namespace CommandRunner.CoreConsoleTest
         {
             Console.WriteLine("Hi");
         }
-        [Command("throw exception")]
-        public void ThrowException()
-        {
-            throw new Exception("Exception thrown!");
-        }
     }
 }

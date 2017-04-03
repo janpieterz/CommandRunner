@@ -37,7 +37,7 @@ namespace CommandRunner.CommandLine
                 if (result)
                 {
                     _state.Arguments = _state.Arguments.Skip(navigatableCommand.Identifier.Split(' ').Length)
-                    .Skip(navigatableCommand.MinimumParameters).ToList();
+                        .Skip(navigatableCommand.MinimumParameters).ToList();
                     if (_state.Arguments.Any())
                     {
                         FindAndExecuteCommand();
@@ -46,6 +46,10 @@ namespace CommandRunner.CommandLine
                     {
                         ConsoleWrite.WriteErrorLine("We seem to be missing a follow up command.");
                     }
+                }
+                else
+                {
+                    Environment.Exit(1);
                 }
             }
             else
@@ -57,7 +61,11 @@ namespace CommandRunner.CommandLine
                 }
                 else if (match.Item2 == MatchState.Matched)
                 {
-                    ExecuteCommand(match.Item1, _state.Arguments);
+                    var result = ExecuteCommand(match.Item1, _state.Arguments);
+                    if (!result)
+                    {
+                        Environment.Exit(1);
+                    }
                 }
             }
         }

@@ -66,13 +66,14 @@ namespace CommandRunner
             return possibleArguments;
         }
 
-        public void Invoke(object instance, object[] parameters)
+        public bool Invoke(object instance, object[] parameters)
         {
             if (MethodInfo != null)
             {
                 try
                 {
                     MethodInfo.Invoke(instance, parameters);
+                    return true;
                 }
                 catch (TargetInvocationException exception) when(exception.InnerException != null)
                 {
@@ -80,15 +81,17 @@ namespace CommandRunner
                         $"Exception occured while executing the command '{Identifier}'");
                     ConsoleWrite.WriteErrorLine($"{exception.InnerException.GetType()}: {exception.InnerException.Message}");
                     ConsoleWrite.WriteErrorLine(exception.StackTrace);
+                    return false;
                 }
                 catch (Exception exception)
                 {
                     ConsoleWrite.WriteErrorLine(
                         $"Exception occured while executing the command {Identifier}: {exception.GetType()}: {exception.Message}");
                     ConsoleWrite.WriteErrorLine(exception.StackTrace);
+                    return false;
                 }
             }
-            
+            return false;
         }
         public override string ToString()
         {

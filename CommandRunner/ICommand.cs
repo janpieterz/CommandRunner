@@ -14,7 +14,7 @@ namespace CommandRunner
         MatchState Match(List<string> arguments);
         List<string> ArgumentsWithoutIdentifier(List<string> arguments);
         Type Type { get; }
-        void Invoke(object instance, object[] parameters);
+        bool Invoke(object instance, object[] parameters);
 
     }
 }
