@@ -4,8 +4,7 @@
       "commandName": "Project"
     },
     "CoreConsoleTest": {
-      "commandName": "Project",
-      "commandLineArgs": "throw exception"
+      "commandName": "Project"
     }
   }
 }

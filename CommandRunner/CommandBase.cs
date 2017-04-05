@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace CommandRunner
 {
@@ -72,7 +73,9 @@ namespace CommandRunner
             {
                 try
                 {
-                    MethodInfo.Invoke(instance, parameters);
+                    var result = MethodInfo.Invoke(instance, parameters);
+                    var resultTask = result as Task;
+                    resultTask?.GetAwaiter().GetResult();
                     return true;
                 }
                 catch (TargetInvocationException exception) when(exception.InnerException != null)

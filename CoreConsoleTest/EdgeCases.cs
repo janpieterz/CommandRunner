@@ -10,11 +10,27 @@ namespace CommandRunner.CoreConsoleTest
         {
             throw new Exception("Exception thrown!");
         }
-        [Command("count async")]
+        [Command("count void async")]
         public async void CountAsync()
         {
             int t = await Task.Run(() => Allocate());
             Console.WriteLine("Compute: " + t);
+        }
+
+        [Command("count task async")]
+        public async Task CountAsyncTask()
+        {
+            int t = await Task.Run(() => Allocate());
+            Console.WriteLine("Compute: " + t);
+        }
+
+        [Command("count task")]
+        public Task CountTask()
+        {
+            return Task.Run(() =>
+            {
+                Console.WriteLine(Allocate());
+            });
         }
 
         static int Allocate()
