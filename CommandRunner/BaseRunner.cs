@@ -25,8 +25,12 @@ namespace CommandRunner
             }
             if (matches.Count > 1)
             {
-                ConsoleWrite.WriteErrorLine(ErrorMessages.TooManyMatches);
-                return null;
+                ResolveDuplicateMatches(arguments, matches);
+                if (matches.Count > 1)
+                {
+                    ConsoleWrite.WriteErrorLine(ErrorMessages.TooManyMatches);
+                    return null;
+                }
             }
             var match = matches.Single();
             if (match.Value == MatchState.MissingParameter)
@@ -41,6 +45,28 @@ namespace CommandRunner
             return new Tuple<ICommand, MatchState>(match.Key, match.Value);
         }
 
+        private void ResolveDuplicateMatches(List<string> arguments, Dictionary<ICommand, MatchState> matches)
+        {
+            List<string> workingArguments = new List<string>();
+            var currentMatches = new List<KeyValuePair<ICommand, MatchState>>();
+            foreach (var argument in arguments)
+            {
+                currentMatches.Clear();
+                workingArguments.Add(argument);
+                string searchString = string.Join(" ", workingArguments);
+
+                var matched = matches.Where(x => x.Key.Identifier.Contains(searchString)).ToList();
+                if ((!matched.Any() && currentMatches.Count == 1) || matched.Count == 1)
+                {
+                    matches.Clear();
+                    matches.Add(matched[0].Key, matched[0].Value);
+                }
+                else
+                {
+                    currentMatches.AddRange(matched);
+                }
+            }
+        }
         internal void ProcessMatches(Dictionary<ICommand, MatchState> matches, List<string> arguments, Action<ICommand, List<string>> functionOnMatch)
         {
             foreach (KeyValuePair<ICommand, MatchState> match in matches)

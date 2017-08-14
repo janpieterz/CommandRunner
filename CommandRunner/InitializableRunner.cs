@@ -9,10 +9,10 @@ namespace CommandRunner {
     internal class InitializableRunner {
 
         readonly RunnerConfiguration _configuration;
-        private List<Type> NavigatableTypes { get; set; }
-        private List<ICommand> Menu { get; set; }
-        private List<string> Arguments { get; set; }
-        private RunModes Mode { get; set; }
+        internal List<Type> NavigatableTypes { get; set; }
+        internal List<ICommand> Menu { get; set; }
+        internal List<string> Arguments { get; set; }
+        internal RunModes Mode { get; set; }
         internal ICommandScanner CommandScanner { get; set; }
         public InitializableRunner(RunnerConfiguration configuration) {
             _configuration = configuration;
