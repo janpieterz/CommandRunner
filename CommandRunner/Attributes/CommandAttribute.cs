@@ -17,12 +17,18 @@ namespace CommandRunner
         /// </summary>
         public string Help { get;  }
         /// <summary>
+        /// When executed in a menu and the command completes succesfully the up command will automatically be executed
+        /// </summary>
+        public bool MoveUpAfterSuccessfulExecution { get; }
+
+        /// <summary>
         /// Creates an instance of the CommandAttribute
         /// </summary>
-        public CommandAttribute(string identifier, string help = null)
+        public CommandAttribute(string identifier, string help = null, bool moveUpAfterSuccessfulExecution = false)
         {
             Identifier = identifier;
             Help = help;
+            MoveUpAfterSuccessfulExecution = moveUpAfterSuccessfulExecution;
         }
     }
 }

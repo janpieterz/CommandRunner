@@ -1,40 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommandRunner;
 using CommandRunner.Terminal;
 using Xunit;
 
-namespace Tests
+namespace CommandRunner.Tests
 {
-    public class DuplicateNestingCommand
-    {
-        [Command("duplicate nesting")]
-        public void DuplicateNesting()
-        {
-            
-        }
-
-        [Command("duplicate nesting")]
-        public void DuplicateNestingExample()
-        {
-            
-        }
-    }
-
-    public class NestedNameCommand
-    {
-        [Command("nested name")]
-        public void DuplicateNesting()
-        {
-
-        }
-
-        [Command("nested name example")]
-        public void DuplicateNestingExample()
-        {
-
-        }
-    }
     public class OddCasesTests
     {
         [Theory, InlineData()]
@@ -77,5 +47,34 @@ namespace Tests
             Assert.Equal("nested name example", result.Item1.Identifier);
         }
 
+        public class DuplicateNestingCommand
+        {
+            [Command("duplicate nesting")]
+            public void DuplicateNesting()
+            {
+
+            }
+
+            [Command("duplicate nesting")]
+            public void DuplicateNestingExample()
+            {
+
+            }
+        }
+
+        public class NestedNameCommand
+        {
+            [Command("nested name")]
+            public void DuplicateNesting()
+            {
+
+            }
+
+            [Command("nested name example")]
+            public void DuplicateNestingExample()
+            {
+
+            }
+        }
     }
 }

@@ -36,7 +36,7 @@ The library will try to map the arguments if it sees typed arguments. To prevent
 
 # Attributes used to setup your runner(make sure to check the CoreconsoleTest app for examples):
 ```c#
-[Command("identifier", "help")]
+[Command(string:identifier, string:help, boolean:moveUpAfterSuccessfulExecution)]
 ```
 This attribute (used on methods) signals the runner it can run this method using the identifier. Can be used in a NestedCommand and a NavigatableCommand
 ```c#

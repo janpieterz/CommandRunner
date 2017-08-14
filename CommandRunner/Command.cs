@@ -6,6 +6,7 @@ namespace CommandRunner
 {
     internal class SingleCommand : CommandBase, ICommand
     {
+        public bool MoveUpAfterSuccessfulExecution { get; set; }
         public void WriteToConsole()
         {
             Console.Write(Identifier);

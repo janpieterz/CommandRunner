@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommandRunner.Terminal;
 
 namespace CommandRunner
 {
@@ -127,6 +128,11 @@ namespace CommandRunner
                 if (navigatableCommand != null)
                 {
                     SetMenu(navigatableCommand, commandInstance);
+                } else if (result && command is SingleCommand singleCommand &&
+                           singleCommand.MoveUpAfterSuccessfulExecution &&
+                           State is TerminalState terminalState)
+                {
+                    terminalState.MoveUp();
                 }
                 return result;
             }

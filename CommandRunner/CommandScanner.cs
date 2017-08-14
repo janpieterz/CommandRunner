@@ -129,7 +129,7 @@ namespace CommandRunner
                 {
                     var methodAttribute = methodInfo.GetCustomAttribute<CommandAttribute>();
                     var identifier = $"{nestedAttribute.Identifier.Trim()} {methodAttribute.Identifier.Trim()}";
-                    AddSingleCommand(nestedCommand, methodInfo, identifier, methodAttribute.Help);
+                    AddSingleCommand(nestedCommand, methodInfo, identifier, methodAttribute.Help, methodAttribute.MoveUpAfterSuccessfulExecution);
                 }
             }
         }
@@ -152,14 +152,14 @@ namespace CommandRunner
         }
         private void AddSingleCommand(Type type, CommandAttribute methodAttribute, MethodInfo methodInfo)
         {
-            AddSingleCommand(type, methodInfo, methodAttribute.Identifier.Trim(), methodAttribute.Help);
+            AddSingleCommand(type, methodInfo, methodAttribute.Identifier.Trim(), methodAttribute.Help, methodAttribute.MoveUpAfterSuccessfulExecution);
         }
-        private void AddSingleCommand(Type type, MethodInfo methodInfo, string identifier, string help)
+        private void AddSingleCommand(Type type, MethodInfo methodInfo, string identifier, string help, bool moveUpAfterSuccessfulExecution)
         {
-            _menu.Add(CreateCommand(type, methodInfo, identifier, help));
+            _menu.Add(CreateCommand(type, methodInfo, identifier, help, moveUpAfterSuccessfulExecution));
         }
 
-        private SingleCommand CreateCommand(Type type, MethodInfo methodInfo, string identifier, string help)
+        private SingleCommand CreateCommand(Type type, MethodInfo methodInfo, string identifier, string help, bool moveUpAfterSuccessfulExecution)
         {
             return new SingleCommand
             {
@@ -167,13 +167,14 @@ namespace CommandRunner
                 Help = help,
                 Parameters = methodInfo.GetParameters().ToList(),
                 Type = type,
-                MethodInfo = methodInfo
+                MethodInfo = methodInfo,
+                MoveUpAfterSuccessfulExecution = moveUpAfterSuccessfulExecution
             };
         }
 
         private SingleCommand CreateCommand(Type type, MethodInfo methodInfo, CommandAttribute attribute)
         {
-            return CreateCommand(type, methodInfo, attribute.Identifier.Trim(), attribute.Help);
+            return CreateCommand(type, methodInfo, attribute.Identifier.Trim(), attribute.Help, attribute.MoveUpAfterSuccessfulExecution);
         }
     }
 }
