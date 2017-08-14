@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace CommandRunner
@@ -71,6 +72,13 @@ namespace CommandRunner
         {
             if (MethodInfo != null)
             {
+                if (MethodInfo.ReturnType == typeof(void) &&
+                    MethodInfo.GetCustomAttribute<AsyncStateMachineAttribute>() != null)
+                {
+                    ConsoleWrite.WriteErrorLine(
+                        "Async void methods are not supported. Use async Task instead.");
+                    return false;
+                }
                 try
                 {
                     var result = MethodInfo.Invoke(instance, parameters);
