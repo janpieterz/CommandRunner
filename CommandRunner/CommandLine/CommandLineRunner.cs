@@ -30,8 +30,7 @@ namespace CommandRunner.CommandLine
         {
             var match = Match(_state.Arguments);
             if (match == null) return;
-            var navigatableCommand = match.Item1 as NavigatableCommand;
-            if (navigatableCommand != null)
+            if (match.Item1 is NavigatableCommand navigatableCommand)
             {
                 var result = ExecuteCommand(match.Item1, _state.Arguments);
                 if (result)
