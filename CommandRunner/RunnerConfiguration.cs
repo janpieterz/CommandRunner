@@ -16,6 +16,7 @@ namespace CommandRunner
         internal RunModes? RunMode {get; set;}
         internal Func<Type, object> CommandActivator {get; private set;}
         internal List<Type> TypesToScan {get;} = new List<Type>();
+        internal List<Type> TypesToScanForPublicMethods { get; } = new List<Type>();
         internal List<string> Arguments { get; set; }
         /// <summary>
         /// Initializes the RunnerConfiguration builder.
@@ -88,6 +89,22 @@ namespace CommandRunner
             var assemblies = Reflection.GetAllReferencedAssemblies();
             var types = Reflection.GetAllTypes(assemblies);
             TypesToScan.AddRange(types);
+        }
+        /// <summary>
+        /// Adds types to existing scanned types and allows scanning for public methods
+        /// </summary>
+        /// <param name="types">The types</param>
+        /// <param name="scanPublicMethods">Flag to trigger public method scanning</param>
+        public void AddTypes(IEnumerable<Type> types, bool scanPublicMethods = false)
+        {
+            if (!scanPublicMethods)
+            {
+                TypesToScan.AddRange(types);
+            }
+            else
+            {
+                TypesToScanForPublicMethods.AddRange(types);
+            }
         }
     }
 

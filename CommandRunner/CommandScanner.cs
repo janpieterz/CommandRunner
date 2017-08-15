@@ -8,6 +8,7 @@ namespace CommandRunner
     internal interface ICommandScanner
     {
         Tuple<List<ICommand>, List<Type>> ScanTypes(List<Type> types);
+        Tuple<List<ICommand>, List<Type>> ScanTypesForPublicMethods(List<Type> types);
     }
 
     internal class CommandScanner : ICommandScanner
@@ -25,6 +26,67 @@ namespace CommandRunner
             ProcessNavigatableCommands();
             ProcessSingleCommands();
             return new Tuple<List<ICommand>, List<Type>>(_menu, _navigatableTypes);
+        }
+
+        public Tuple<List<ICommand>, List<Type>> ScanTypesForPublicMethods(List<Type> types)
+        {
+            _menu = new List<ICommand>();
+            _navigatableTypes = new List<Type>();
+            _scannableTypes = types;
+
+            ProcessTypesWithPublicMethods();
+            return new Tuple<List<ICommand>, List<Type>>(_menu, _navigatableTypes);
+        }
+
+        private void ProcessTypesWithPublicMethods()
+        {
+            foreach (var scannableType in _scannableTypes)
+            {
+                var publicMethods = scannableType.GetTypeInfo().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public);
+                if (publicMethods.Any())
+                {
+                    var subItems = new List<ICommand>();
+                    foreach (MethodInfo command in publicMethods)
+                    {
+                        subItems.Add(CreateCommand(scannableType, command, GetIdentifierFromPascalCase(command.Name), null, false));
+                    }
+                    var menuItem = new NavigatableCommand()
+                    {
+                        Help = null,
+                        Identifier = GetIdentifierFromPascalCase(scannableType.Name),
+                        SubItems = subItems,
+                        Type = scannableType,
+                        Parameters = new List<ParameterInfo>()
+                    };
+                    _navigatableTypes.Add(scannableType);
+                    _menu.Add(menuItem);
+                }
+            }
+        }
+
+        private string GetIdentifierFromPascalCase(string name)
+        {
+            string identifier = string.Empty;
+
+            foreach (char c in name)
+            {
+                if (Char.IsUpper(c))
+                {
+                    if (identifier != string.Empty)
+                    {
+                        identifier += " " + Char.ToLower(c);
+                    }
+                    else
+                    {
+                        identifier += Char.ToLower(c);
+                    }
+                }
+                else
+                {
+                    identifier += c;
+                }
+            }
+            return identifier;
         }
 
         private void ProcessNavigatableCommands()

@@ -21,8 +21,11 @@ namespace CommandRunner {
 
         internal IStartableRunner Initialize() {
             var scanResult = CommandScanner.ScanTypes(_configuration.TypesToScan);
+            var publicScanResult = CommandScanner.ScanTypesForPublicMethods(_configuration.TypesToScanForPublicMethods);
             Menu = scanResult.Item1;
             NavigatableTypes = scanResult.Item2;
+            Menu.AddRange(publicScanResult.Item1);
+            NavigatableTypes.AddRange(publicScanResult.Item2);
 
             SetArguments();
             SetMode();

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Simple CommandRunner to bootstrap console applications</Description>
-    <VersionPrefix>2.2.1</VersionPrefix>
+    <VersionPrefix>2.3.0</VersionPrefix>
     <Authors>Jan-Pieter Zoutewelle</Authors>
     <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

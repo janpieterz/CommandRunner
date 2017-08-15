@@ -110,3 +110,8 @@ configuration.ForceCommandLine();
 ```c#
 configuration.UseArguments(new List<string>() {"test", "different", "arguments"});
 ```
+
+## Provide types to scan. These will be scanned for public methods and identified by PascalCasing or camelCasing splitting
+```c#
+configuration.AddTypes(new List<Type>() { typeof(ExamplePublic) }, true);
+```
