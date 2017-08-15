@@ -42,7 +42,7 @@ namespace CommandRunner
         {
             foreach (var scannableType in _scannableTypes)
             {
-                var publicMethods = scannableType.GetTypeInfo().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public);
+                var publicMethods = scannableType.GetTypeInfo().GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public).Where(x => !x.IsSpecialName);
                 if (publicMethods.Any())
                 {
                     var subItems = new List<ICommand>();

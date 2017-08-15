@@ -45,6 +45,8 @@ namespace CommandRunner.Tests
             {
                 
             }
+
+            public string Tester { get; set; }
         }
     }
 }

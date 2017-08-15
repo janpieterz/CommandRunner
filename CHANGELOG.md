@@ -1,3 +1,5 @@
+## 2.3.1 (15-08-2017)
+  * Ignore get/set methods on public type scanning
 ## 2.3.0 (15-08-2017)
   * Methods with similar call structure are now fixed (#2)
   * Auto up after commands is now available (#3)
