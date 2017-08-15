@@ -1,3 +1,5 @@
+## 2.3.2 (15-08-2017)
+  * Add inner exception stack trace when executing command
 ## 2.3.1 (15-08-2017)
   * Ignore get/set methods on public type scanning
 ## 2.3.0 (15-08-2017)

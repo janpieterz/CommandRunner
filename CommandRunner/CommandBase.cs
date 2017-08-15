@@ -91,6 +91,7 @@ namespace CommandRunner
                     ConsoleWrite.WriteErrorLine(
                         $"Exception occured while executing the command '{Identifier}'");
                     ConsoleWrite.WriteErrorLine($"{exception.InnerException.GetType()}: {exception.InnerException.Message}");
+                    ConsoleWrite.WriteErrorLine($"{exception.InnerException.StackTrace}");
                     ConsoleWrite.WriteErrorLine(exception.StackTrace);
                     return false;
                 }
