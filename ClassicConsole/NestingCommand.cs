@@ -1,6 +1,6 @@
 ﻿using System;
-using CommandRunner;
-namespace CommandRunner.ConsoleApplicationTest
+
+namespace CommandRunner.ClassicConsole
 {
     [Command("nest", "Commands can nest too.")]
     public class NestingCommand

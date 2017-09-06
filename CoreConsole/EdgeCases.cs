@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace CommandRunner.CoreConsoleTest
+namespace CommandRunner.CoreConsole
 {
     public class EdgeCases
     {

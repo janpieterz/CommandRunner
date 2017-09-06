@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandRunner.CoreConsoleTest
+namespace CommandRunner.CoreConsole
 {
     public class AccountClientsMenu
     {

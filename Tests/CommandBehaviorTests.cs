@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CommandRunner.Terminal;
 using Xunit;
 
@@ -10,7 +9,7 @@ namespace CommandRunner.Tests
     public class CommandBehaviorTests
     {
 
-        [Theory, InlineData()]
+        [Fact]
         public void TestNormalExecution()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
@@ -23,7 +22,7 @@ namespace CommandRunner.Tests
             var result = runner.ExecuteCommand(runner.State.ActiveMenu.Single(x => x.Identifier == "normal"), new List<string>());
             Assert.True(result);
         }
-        [Theory, InlineData()]
+        [Fact]
         public void TestThrowingStaysInMenuExecution()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
@@ -37,7 +36,7 @@ namespace CommandRunner.Tests
             Assert.False(result);
             Assert.Equal(3, runner.State.ActiveMenu.Count);
         }
-        [Theory, InlineData()]
+        [Fact]
         public void TestMoveUpExecution()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
@@ -49,7 +48,7 @@ namespace CommandRunner.Tests
             Assert.Equal(3, runner.State.ActiveMenu.Count);
             var result = runner.ExecuteCommand(runner.State.ActiveMenu.Single(x => x.Identifier == "goes"), new List<string>());
             Assert.True(result);
-            Assert.Equal(1, runner.State.ActiveMenu.Count);
+            Assert.Single(runner.State.ActiveMenu);
         }
 
         [NavigatableCommand("menu")]

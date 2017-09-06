@@ -8,34 +8,34 @@ namespace CommandRunner.Tests
 {
     public class PublicMethodScanningTests
     {
-        [Theory, InlineData]
+        [Fact]
         public void DefaultDoesntScanPublicMethods()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
             configuration.ScanTypes(new List<Type>());
             configuration.AddTypes(new List<Type>(){ typeof(ExamplePublic) });
-            Assert.Equal(1, configuration.TypesToScan.Count);
+            Assert.Single(configuration.TypesToScan);
             InitializableRunner runner = new InitializableRunner(configuration);
             runner.Initialize();
-            Assert.Equal(0, runner.Menu.Count);
-            Assert.Equal(0, runner.NavigatableTypes.Count);
+            Assert.Empty(runner.Menu);
+            Assert.Empty(runner.NavigatableTypes);
         }
 
-        [Theory, InlineData]
+        [Fact]
         public void ScanPublicMethods()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
             configuration.ScanTypes(new List<Type>());
             configuration.AddTypes(new List<Type>() { typeof(ExamplePublic) }, true);
-            Assert.Equal(0, configuration.TypesToScan.Count);
-            Assert.Equal(1, configuration.TypesToScanForPublicMethods.Count);
+            Assert.Empty(configuration.TypesToScan);
+            Assert.Single(configuration.TypesToScanForPublicMethods);
             InitializableRunner runner = new InitializableRunner(configuration);
             runner.Initialize();
-            Assert.Equal(1, runner.Menu.Count);
-            Assert.Equal(1, runner.NavigatableTypes.Count);
+            Assert.Single(runner.Menu);
+            Assert.Single(runner.NavigatableTypes);
             Assert.Equal("example public", runner.Menu.First().Identifier);
             var navigatableCommand = (NavigatableCommand) runner.Menu.First();
-            Assert.Equal(1, navigatableCommand.SubItems.Count);
+            Assert.Single(navigatableCommand.SubItems);
             Assert.Equal("test method", navigatableCommand.SubItems.First().Identifier);
         }
 

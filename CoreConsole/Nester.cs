@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CommandRunner.CoreConsoleTest
+namespace CommandRunner.CoreConsole
 {
     [NestedCommand("nesting")]
     public class Nester

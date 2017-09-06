@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandRunner.CoreConsoleTest
+namespace CommandRunner.CoreConsole
 {
     [NavigatableCommand("random")]
     public class RandomMenu

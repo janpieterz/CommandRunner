@@ -1,4 +1,4 @@
-﻿namespace CommandRunner.CoreConsoleTest
+﻿namespace CommandRunner.CoreConsole
 {
     public class Injectable
     {

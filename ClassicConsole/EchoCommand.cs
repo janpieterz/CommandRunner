@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommandRunner;
-namespace CommandRunner.ConsoleApplicationTest
+
+namespace CommandRunner.ClassicConsole
 {
     public class EchoCommand
     {

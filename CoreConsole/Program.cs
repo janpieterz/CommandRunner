@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Autofac;
-using CoreConsoleTest;
 
-namespace CommandRunner.CoreConsoleTest
+namespace CommandRunner.CoreConsole
 {
-    public class Program
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main()
         {
             RunnerConfiguration configuration = new RunnerConfiguration("Example Runner");
-            configuration.ScanTypes(new List<Type>() { typeof(RandomMenu),typeof(AccountMenu), typeof(EchoCommand),typeof(NestingCommand), typeof(EdgeCases)});
-            configuration.AddTypes(new List<Type>(){typeof(ExamplePublic)}, true);
+            configuration.ScanTypes(new List<Type>() { typeof(RandomMenu), typeof(AccountMenu), typeof(EchoCommand), typeof(NestingCommand), typeof(EdgeCases) });
+            configuration.AddTypes(new List<Type>() { typeof(ExamplePublic) }, true);
             configuration.ForceTerminal();
             //configuration.ForceCommandLine();
             Runner.Start(configuration);
-            
+
             //configuration.ScanAllAssemblies();
             //configuration.UseReflectionCommandActivator();
             //configuration.ForceTerminal();
@@ -92,14 +90,15 @@ namespace CommandRunner.CoreConsoleTest
         //        options.Scan.SpecificAssemblies(new List<Assembly>() { Assembly.GetEntryAssembly() });
         //    }).Run();
         //}
-        private static IContainer CreateContainer()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterType<EchoCommand>().PropertiesAutowired();
-            builder.RegisterType<Injectable>().PropertiesAutowired();
-            builder.RegisterType<NestingCommand>().PropertiesAutowired();
-            return builder.Build();
-        }
+        //private static IContainer CreateContainer()
+        //{
+        //    var builder = new ContainerBuilder();
+        //    builder.RegisterType<EchoCommand>().PropertiesAutowired();
+        //    builder.RegisterType<Injectable>().PropertiesAutowired();
+        //    builder.RegisterType<NestingCommand>().PropertiesAutowired();
+        //    return builder.Build();
+        //}
+
 
         //private static MethodInfo GetTestMethodInfo()
         //{

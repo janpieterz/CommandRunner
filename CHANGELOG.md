@@ -1,3 +1,5 @@
+## 2.4.0 (06-09-2017)
+  * Update to netstandard20
 ## 2.3.2 (15-08-2017)
   * Add inner exception stack trace when executing command
 ## 2.3.1 (15-08-2017)

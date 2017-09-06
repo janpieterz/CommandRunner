@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using CommandRunner.Terminal;
 using Moq;
@@ -14,7 +10,7 @@ namespace CommandRunner.Tests
 {
     public class OddCasesTests
     {
-        [Theory, InlineData]
+        [Fact]
         public void TestAsyncVoidReturns()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
@@ -37,7 +33,7 @@ namespace CommandRunner.Tests
             var result = runner.ExecuteCommand(runner.State.ActiveMenu.Single(x => x.Identifier == "test"), new List<string>());
             Assert.False(result);
         }
-        [Theory, InlineData()]
+        [Fact]
         public void TestDuplicateLongNameResolution()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
@@ -50,7 +46,7 @@ namespace CommandRunner.Tests
             });
         }
 
-        [Theory, InlineData()]
+        [Fact]
         public void TestNestedNameResolution()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
@@ -63,7 +59,7 @@ namespace CommandRunner.Tests
             Assert.NotNull(result);
             Assert.Equal("nested name", result.Item1.Identifier);
         }
-        [Theory, InlineData()]
+        [Fact]
         public void TestNestedNameDeepResolution()
         {
             RunnerConfiguration configuration = new RunnerConfiguration();
