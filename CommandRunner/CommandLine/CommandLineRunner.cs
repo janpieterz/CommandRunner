@@ -33,7 +33,7 @@ namespace CommandRunner.CommandLine
             if (match.Item1 is NavigatableCommand navigatableCommand)
             {
                 var result = ExecuteCommand(match.Item1, _state.Arguments);
-                if (result)
+                if (result || navigatableCommand.MethodInfo == null)
                 {
                     _state.Arguments = _state.Arguments.Skip(navigatableCommand.Identifier.Split(' ').Length)
                         .Skip(navigatableCommand.MinimumParameters).ToList();

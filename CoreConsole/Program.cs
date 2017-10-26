@@ -6,12 +6,12 @@ namespace CommandRunner.CoreConsole
 {
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
             RunnerConfiguration configuration = new RunnerConfiguration("Example Runner");
             configuration.ScanTypes(new List<Type>() { typeof(RandomMenu), typeof(AccountMenu), typeof(EchoCommand), typeof(NestingCommand), typeof(EdgeCases) });
             configuration.AddTypes(new List<Type>() { typeof(ExamplePublic) }, true);
-            configuration.ForceTerminal();
+            //configuration.ForceTerminal();
             //configuration.ForceCommandLine();
             Runner.Start(configuration);
 

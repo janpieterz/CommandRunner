@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandRunner.CoreConsole
+namespace CommandRunner.ClassicConsole
 {
     public class ExamplePublic
     {
