@@ -10,5 +10,11 @@ namespace CommandRunner.ClassicConsole
         {
             Console.WriteLine("Hello");
         }
+
+        [Command("timer")]
+        public void Timer(TimeSpan span)
+        {
+            Console.WriteLine(span);
+        }
     }
 }

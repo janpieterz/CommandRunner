@@ -1,3 +1,5 @@
+## 2.4.2 (08-11-2017)
+  * Allow TimeSpan arguments
 ## 2.4.1 (26-10-2017)
   * Navigatable commands in command line mode now get executed
 ## 2.4.0 (06-09-2017)

@@ -10,7 +10,7 @@ namespace CommandRunner.ClassicConsole
             RunnerConfiguration configuration = new RunnerConfiguration("Example Runner");
             configuration.ScanTypes(new List<Type>() { typeof(EchoCommand), typeof(NestingCommand), typeof(RandomMenu) });
             configuration.AddTypes(new List<Type>(){ typeof(ExamplePublic)}, true);
-            
+            configuration.ForceTerminal();
             Runner.Start(configuration);
         }
     }

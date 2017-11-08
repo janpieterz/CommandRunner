@@ -112,6 +112,11 @@ namespace CommandRunner
                 var result = CreateTypedParameter(nulledType, value);
                 return result;
             }
+            if (type == typeof(TimeSpan))
+            {
+                var result = TimeSpan.Parse(value);
+                return result;
+            }
             return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
         }
 
