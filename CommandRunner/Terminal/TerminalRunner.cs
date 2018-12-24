@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 
 namespace CommandRunner.Terminal
@@ -78,6 +79,9 @@ namespace CommandRunner.Terminal
         {
             Console.Write($"{Environment.NewLine}Command> ");
             Console.ForegroundColor = _state.CommandColor;
+            byte[] inputBuffer = new byte[2048];
+            Stream inputStream = Console.OpenStandardInput(inputBuffer.Length);
+            Console.SetIn(new StreamReader(inputStream, Console.InputEncoding));
             var result = Console.ReadLine();
             return result;
         }
