@@ -11,6 +11,12 @@ namespace CommandRunner.ClassicConsole
             Console.WriteLine("Hello");
         }
 
+        [Command("sput")]
+        public void Sput(string sput)
+        {
+            Console.WriteLine(sput);
+        }
+
         [Command("timer")]
         public void Timer(TimeSpan span)
         {

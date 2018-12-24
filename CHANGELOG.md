@@ -1,3 +1,5 @@
+## 2.4.3 (24-12-2018)
+  * Allow longer console input than the default 254 character limitation
 ## 2.4.2 (08-11-2017)
   * Allow TimeSpan arguments
 ## 2.4.1 (26-10-2017)
