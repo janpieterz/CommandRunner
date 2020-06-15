@@ -8,14 +8,19 @@ namespace CommandRunner
     {
         internal static IEnumerable<Assembly> GetAllReferencedAssemblies()
         {
-            var assemblyNames = Assembly.GetEntryAssembly().GetReferencedAssemblies();
-            var assemblies = new List<Assembly>();
-            foreach (var name in assemblyNames)
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly != null)
             {
-                assemblies.Add(Assembly.Load(name));
+                var assemblyNames = entryAssembly.GetReferencedAssemblies();
+                var assemblies = new List<Assembly>();
+                foreach (var name in assemblyNames)
+                {
+                    assemblies.Add(Assembly.Load(name));
+                }
+                assemblies.Add(Assembly.GetEntryAssembly());
+                return assemblies;
             }
-            assemblies.Add(Assembly.GetEntryAssembly());
-            return assemblies;
+            return new Assembly[0];
         }
 
         internal static IEnumerable<Type> GetAllTypes(IEnumerable<Assembly> assemblies) {

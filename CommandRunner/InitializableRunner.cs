@@ -52,8 +52,9 @@ namespace CommandRunner {
         private void SetMode() {
             if (!_configuration.RunMode.HasValue)
             {
+                var entryAssembly = Assembly.GetEntryAssembly();
                 if (Arguments.Count == 0 ||
-                    ((Arguments.FirstOrDefault() == Assembly.GetEntryAssembly().Location ||
+                    (entryAssembly != null && (Arguments.FirstOrDefault() == entryAssembly.Location ||
                      Arguments.FirstOrDefault().Contains("vshost.exe"))&& Arguments.Count == 1))
                 {
                     Mode = RunModes.Terminal;
@@ -71,7 +72,11 @@ namespace CommandRunner {
 
         private void RemoveRedundantArguments()
         {
-            Arguments.Remove(Assembly.GetEntryAssembly().Location);
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly != null)
+            {
+                Arguments.Remove(entryAssembly.Location);    
+            }
             var firstArgument = Arguments.FirstOrDefault();
             if (!string.IsNullOrEmpty(firstArgument) && firstArgument.Contains("vshost.exe"))
             {

@@ -21,7 +21,6 @@ namespace CommandRunner.Tests
         [MemberData(nameof(GetArguments))]
         public void ParseInputString(string input, List<string> output)
         {
-            Console.WriteLine(Assembly.GetEntryAssembly().Location);
             var arguments = InputParser.ParseInputToArguments(input).ToList();
             for (int i = 0; i < arguments.Count(); i++)
             {

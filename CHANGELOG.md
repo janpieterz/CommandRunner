@@ -1,3 +1,5 @@
+## 2.4.4 (15-06-2020)
+  * Add explicit support for net48 and netcoreapp3.1
 ## 2.4.3 (24-12-2018)
   * Allow longer console input than the default 254 character limitation
 ## 2.4.2 (08-11-2017)
