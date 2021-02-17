@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreConsole", "CoreConsole\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassicConsole", "ClassicConsole\ClassicConsole.csproj", "{ECEFC3CE-375B-45AF-8157-7434825918D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net5Console", "Net5Console\Net5Console.csproj", "{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{ECEFC3CE-375B-45AF-8157-7434825918D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECEFC3CE-375B-45AF-8157-7434825918D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECEFC3CE-375B-45AF-8157-7434825918D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

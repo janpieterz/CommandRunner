@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Simple CommandRunner to bootstrap console applications</Description>
     <Authors>Jan-Pieter Zoutewelle</Authors>
-    <TargetFrameworks>netstandard2.0;net48;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net48;netcoreapp3.1;net5</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>CommandRunner</AssemblyName>
     <PackageId>CommandRunner</PackageId>
@@ -15,8 +15,9 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>
-      Add explicit support for net48 and netcoreapp3.1
+      - Add explicit support for net5
+      - Ensure support for .dll and .exe start specifications
     </PackageReleaseNotes>
-    <Version>2.4.4</Version>
+    <Version>2.4.6</Version>
   </PropertyGroup>
 </Project>

@@ -28,8 +28,8 @@ namespace CommandRunner {
             NavigatableTypes.AddRange(publicScanResult.Item2);
 
             SetArguments();
-            SetMode();
             RemoveRedundantArguments();
+            SetMode();
             ValidateSettings();
             return CreateRunnerForMode();
         }
@@ -75,7 +75,13 @@ namespace CommandRunner {
             var entryAssembly = Assembly.GetEntryAssembly();
             if (entryAssembly != null)
             {
-                Arguments.Remove(entryAssembly.Location);    
+                Arguments.Remove(entryAssembly.Location);
+                Arguments.Remove(entryAssembly.Location.Replace("\\", "/"));
+
+                var exeVersion = entryAssembly.Location.Substring(0, entryAssembly.Location.Length - 4) + ".exe";
+                
+                Arguments.Remove(exeVersion);
+                Arguments.Remove(exeVersion.Replace("\\", "/"));
             }
             var firstArgument = Arguments.FirstOrDefault();
             if (!string.IsNullOrEmpty(firstArgument) && firstArgument.Contains("vshost.exe"))

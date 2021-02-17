@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Net5Console": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
