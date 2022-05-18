@@ -73,7 +73,16 @@ namespace CommandRunner {
         private void RemoveRedundantArguments()
         {
             var entryAssembly = Assembly.GetEntryAssembly();
-            if (entryAssembly != null)
+
+            //https://docs.microsoft.com/en-us/dotnet/core/deploying/single-file/overview#api-incompatibility
+            var args = Environment.GetCommandLineArgs();
+            var processName = args.Length > 0 ? args[0] : null;
+            if (!string.IsNullOrEmpty(processName))
+            {
+                Arguments.Remove(processName);
+            }
+
+            if (entryAssembly != null && !string.IsNullOrEmpty(entryAssembly.Location)) //https://docs.microsoft.com/en-us/dotnet/core/deploying/single-file/overview#api-incompatibility
             {
                 Arguments.Remove(entryAssembly.Location);
                 Arguments.Remove(entryAssembly.Location.Replace("\\", "/"));

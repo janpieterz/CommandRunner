@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassicConsole", "ClassicCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net5Console", "Net5Console\Net5Console.csproj", "{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net6ConsoleSingleFile", "Net6ConsoleSingleFile\Net6ConsoleSingleFile.csproj", "{8F5B0CF7-75AD-4C2F-9347-3F8475677BBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F27DAA23-EDC1-4F5E-9762-DE2B8C49F440}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F5B0CF7-75AD-4C2F-9347-3F8475677BBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5B0CF7-75AD-4C2F-9347-3F8475677BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5B0CF7-75AD-4C2F-9347-3F8475677BBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5B0CF7-75AD-4C2F-9347-3F8475677BBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
