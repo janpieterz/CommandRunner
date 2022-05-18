@@ -18,6 +18,6 @@
       - Add explicit support for net5
       - Ensure support for .dll and .exe start specifications
     </PackageReleaseNotes>
-    <Version>2.4.6</Version>
+    <Version>2.4.7</Version>
   </PropertyGroup>
 </Project>
